@@ -90,10 +90,6 @@ const getRegularPage = async (req, res, next) => {
 
 const getMyCrews = async (req, res) => {
     try {
-        if (!req.isAuthenticated()) {
-            return res.redirect('/user/login');
-        }
-        
         const userId = req.user._id;
         const role = req.query.role || 'all';
         const crews = await regularService.getMyCrews(userId, role);

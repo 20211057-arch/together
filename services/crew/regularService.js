@@ -115,7 +115,7 @@ async function getRegularAPICrews(filter, page) {
     }                              
 }
 
-async function getMyCrews(userId, role) {
+async function getMyCrews(userId, role) {    
     let tab;
 
     if(role === 'host') {
@@ -131,6 +131,8 @@ async function getMyCrews(userId, role) {
     }
 
     const crews = await regularCrew.find(tab).populate('host', 'name').sort({createdAt : -1});
+    const ageRangeLabel = { all:'전체', '10s':'10대', '20s':'20대', '30s':'30대', '40s':'40대', '50s':'50대', '60+':'60대+' };
+    const levelLabel = { low:'초급', mid:'중급', high:'고급', none:'레벨 무관' };
 
     return crews.map(crew => {
         const obj = crew.toObject();
@@ -147,7 +149,10 @@ async function getMyCrews(userId, role) {
             crewRole,
             dayLabel,
             periodLabel : CONSTANTS.PERIODS[obj.period]?.kr || obj.period,
-            pct: Math.round(obj.member.memberList.length / obj.member.capacity * 100) + '%'
+            pct: Math.round(obj.member.memberList.length / obj.member.capacity * 100) + '%',
+            ageRangeText: obj.ageRange.map(a => ageRangeLabel[a] || a).join('·'),
+            levelText: levelLabel[obj.level] || obj.level,
+            memberCount: obj.member.memberList.length
         };
     });
 }
