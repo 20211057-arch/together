@@ -10,6 +10,7 @@ const crewApplication = require('../../models/crewApplication');
 const ChatRoom = require('../../models/ChatRoom');
 const activityService = require('../crew/activityService');
 const crewActivity = require('../../models/crewActivity');
+const regularCrewReview = require('../../models/regularCrewReview');
 
 async function createRegCrew(data, profileFile, host) {
     const { removeImage, sport, title, intro, 
@@ -161,7 +162,9 @@ async function withdrawMyCrew(regularCrewId, userId) {
 }
 
 async function getCrewDetail(regularCrewId) {
-    const crew = await regularCrew.findById(regularCrewId).populate('host', 'name profileImage');
+    const crew = await regularCrew.findById(regularCrewId)
+                                  .populate('host', 'name profileImage')
+                                  .populate('member.memberList.user', 'name profileImage');
 
     const obj = crew.toObject();
 
@@ -254,6 +257,14 @@ async function handleUserDeleted(userId) {
     );
 }
 
+async function getCrewReview(crewId) {
+    const reviews = await regularCrewReview.find({ crew: crewId })
+                        .populate('author', 'name profileImage')
+                        .sort({ createdAt: -1 });
+
+    return reviews;
+}
+
 module.exports = { 
     createRegCrew,
     getMyCrews, 
@@ -266,5 +277,6 @@ module.exports = {
     getCrewManage,
     postCrewUpdate,
     getCrewActivity,
-    handleUserDeleted
+    handleUserDeleted,
+    getCrewReview
 };

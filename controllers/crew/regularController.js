@@ -71,6 +71,7 @@ const getRegularPage = async (req, res, next) => {
     try {
         const { crewId } = req.params;
         const crew = await regularService.getCrewDetail(crewId);
+        const reviews = await regularService.getCrewReview(crewId);
         let userId;
         let isLiked;
 
@@ -82,7 +83,7 @@ const getRegularPage = async (req, res, next) => {
             userId = null;
         }
 
-        res.render('crew/regular-join-page', { crew, isLiked, userId });
+        res.render('crew/regular-join-page', { crew, isLiked, userId , reviews});
     } catch (error) {
         next(error);
     }
