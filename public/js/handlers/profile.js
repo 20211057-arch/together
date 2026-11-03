@@ -416,5 +416,4 @@ historyTypeTabs.forEach(tab => tab.addEventListener('click', () => {
     regularHistory.style.display = showRegular ? 'block' : 'none';
     instantHistory.style.display = showRegular ? 'none' : 'block';
 }));
-
 });

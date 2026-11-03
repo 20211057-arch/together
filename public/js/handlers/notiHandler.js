@@ -108,4 +108,9 @@ export function initNotiSocket(user) {
         renderNoti(noti, notiList);
         showToast(`경기가 종료됐습니다. '${noti.title}'`);
     });
+
+    socket.on('ACTIVITY_REMINDER', (noti)=>{
+        renderNoti(noti, notiList);
+        showToast(noti.title);
+    });
 }
