@@ -33,6 +33,19 @@ const crewActivitySchema = new mongoose.Schema(
         teamBlue: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
         teamRed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
         attender: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+        attendanceRecords: [{
+            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+            status: { type: String, enum: ['present', 'late', 'absent'], required: true },
+            checkedInAt: { type: Date, default: null }
+        }],
+        attendancePolicyEnabled: { type: Boolean, default: false },
+        attendanceSettledAt: { type: Date, default: null },
+        mannerReviews: [{
+            reviewer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+            reviewee: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+            score: { type: Number, enum: [-1, 0, 1], required: true },
+            createdAt: { type: Date, default: Date.now }
+        }],
         attendanceQrHash: { type: String, select: false },
         attendanceQrExpiresAt: { type: Date, select: false },
         capacity: { type: Number, required: true },
