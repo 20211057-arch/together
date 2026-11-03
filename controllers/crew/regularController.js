@@ -14,10 +14,10 @@ const getRegularCreate = (req, res)=>{
 }
 
 const postRegularCreate = async (req, res)=>{
-    const { data, profileImage, host } = req.crewData;
+    const { data, profileFile, host } = req.crewData;
 
     try {
-        const result = await regularService.createRegCrew(data, profileImage, host);
+        const result = await regularService.createRegCrew(data, profileFile, host);
 
         if (result.success) {
             return res.redirect('/regular/list');
@@ -26,7 +26,7 @@ const postRegularCreate = async (req, res)=>{
         } 
     } catch (error) {
         console.error(error);
-        return res.status(500).send('서버 오류가 발생했습니다.');
+        return res.status(error.status || 500).send(error.status === 400 ? error.message : '서버 오류가 발생했습니다.');
     }
 };
 
@@ -147,6 +147,7 @@ const postCrewUpdate = async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         console.error(error);
+        if (error.status === 400) return res.status(400).json({ success: false, message: error.message });
         res.status(500).render('error/error_500');
     }
 }

@@ -16,10 +16,10 @@ exports.aiSearch = async (req, res, next) => {
 
 exports.getHome = async (req, res, next) => {
     try {
-        const [aiMeetings, latestMeetings, leafletMatches, stats, sportChips, liveFeed] =
+        const [aiMeetings, latestPage, leafletMatches, stats, sportChips, liveFeed] =
             await Promise.all([
                 homeService.getAIRecommendedMeetings(req.user?._id),
-                homeService.getRegularMeetings('', 40),
+                homeService.getLatestMeetingsPage(),
                 homeService.getLeafletMatches(),
                 homeService.getStats(),
                 homeService.getSportChips(),
@@ -37,7 +37,8 @@ exports.getHome = async (req, res, next) => {
 
         res.render('index', {
             featuredMeetings: aiMeetings.featured,
-            latestMeetings,
+            latestMeetings: latestPage.meetings,
+            latestNextCursor: latestPage.nextCursor,
             leafletMatches,
             stats,
             sportChips,
@@ -53,6 +54,19 @@ exports.getHome = async (req, res, next) => {
 };
 
 // 정기모임-api
+exports.getLatestMeetingsApi = async (req, res, next) => {
+    try {
+        const cursor = req.query.cursor || '';
+        if (typeof cursor !== 'string' || cursor.length > 100) {
+            return res.status(400).json({ ok: false });
+        }
+        const page = await homeService.getLatestMeetingsPage(cursor);
+        res.json({ ok: true, ...page });
+    } catch (err) {
+        next(err);
+    }
+};
+
 exports.getRegularMeetingsApi = async (req, res, next) => {
     try {
         const sport = req.query.sport || '';

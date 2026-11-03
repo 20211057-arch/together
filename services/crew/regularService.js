@@ -10,8 +10,15 @@ const ChatRoom = require('../../models/ChatRoom');
 const activityService = require('../crew/activityService');
 const crewActivity = require('../../models/crewActivity');
 const regularCrewReview = require('../../models/regularCrewReview');
+const { parseCrewIntro } = require('../../utils/crewIntro');
 
 async function createRegCrew(data, profileFile, host) {
+    if (typeof data.sport !== 'string' || !Object.hasOwn(CONSTANTS.SPORTS, data.sport)) {
+        const error = new Error('운동 종목을 선택해주세요.');
+        error.status = 400;
+        throw error;
+    }
+    const description = data.introBlocks === undefined ? {} : parseCrewIntro(data.introBlocks);
     const { removeImage, sport, title, intro, 
         period, day, state, city, detail, fee, 
         level, capacity, ageRange, isAutoAccept } = data;    
@@ -39,7 +46,7 @@ async function createRegCrew(data, profileFile, host) {
         isAutoAccept, period, day, ageRange,
         address: { state, city, detail: detail || null },
         sport, fee: Number(fee) || 0, 
-        level: level || 'none', profileImage
+        level: level || 'none', profileImage, ...description
     });
 
     let session = null;
@@ -210,10 +217,12 @@ async function crewLike(regularCrewId, userId) {
 }
 
 async function postCrewUpdate(regularCrewId, updateData, updateFile) {
+    if (updateData.introBlocks !== undefined) Object.assign(updateData, parseCrewIntro(updateData.introBlocks));
+    else if (updateData.intro !== undefined) updateData.introBlocks = [];
     const crew = await regularCrew.findById(regularCrewId);
     if(updateData.removeImage === 'true' || updateFile) {
         if(crew.profileImage && crew.profileImage != '/images/reg-crew/profile/default-profile-image.jpg') {
-            const oldPath = path.join(process.cwd(), 'public/images/reg-crew/profile', crew.profileImage);
+            const oldPath = path.join(__dirname, '../../public/images/reg-crew/profile', path.basename(crew.profileImage));
             if(fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
         }
         if (updateFile) updateData.profileImage = `/images/reg-crew/profile/${updateFile.filename}`;

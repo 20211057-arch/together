@@ -11,6 +11,7 @@ router.use((req, res, next) => {
 });
 
 router.get('/', indexController.getHome);
+router.get('/api/latest-meetings', indexController.getLatestMeetingsApi);
 
 
 // 정기모임-api

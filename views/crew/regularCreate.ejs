@@ -36,16 +36,20 @@
                     <label class="label">종목 선택</label>
                     <div class="chip-group" id="sportGroup">
                         <% Object.entries(CONSTANTS.SPORTS).forEach(([key, value]) => { %>
-                            <input type="radio" name="sport" id="sport-<%= key %>" value="<%= key %>" class="hidden-radio">
+                            <input type="radio" name="sport" id="sport-<%= key %>" value="<%= key %>" class="sport-radio" required>
                             <label for="sport-<%= key %>" class="chip"><%= value.kr %></label>
                         <% }); %>
                     </div>
+                    <p id="sport-error" role="alert" style="color:var(--red);font-size:13px;margin-top:8px" hidden>운동 종목을 선택해주세요.</p>
                 </div>
 
                 <style>
                     .chip { cursor: pointer; }
                     .hidden-radio { display: none; }
                     .hidden-radio:checked + .chip { background: black; border-color: black; color: white; }
+                    .sport-radio { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+                    .sport-radio:checked + .chip { background:black; border-color:black; color:white; }
+                    .sport-radio:focus-visible + .chip { outline:2px solid var(--primary); outline-offset:3px; }
                 </style>
 
                 <div class="field">
@@ -55,7 +59,8 @@
 
                 <div class="field">
                     <label class="label">소개</label>
-                    <textarea name="intro" class="input" placeholder="당신의 모임을 소개해주세요." required></textarea>
+                    <textarea name="intro" id="createCrewIntro" class="input" placeholder="당신의 모임을 소개해주세요." required></textarea>
+                    <%- include('partials/intro-editor', { target: 'createCrewIntro', blocks: [] }) %>
                 </div>
             </div>
 

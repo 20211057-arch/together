@@ -17,17 +17,56 @@ document.addEventListener('DOMContentLoaded', () => {
   // 크루장이 아니면 crew-edit-area 자체가 없음
   if (!editArea) return;
 
+  const editBlocks = [...editArea.querySelectorAll('[data-crew-edit-block]')];
+  editBlocks.forEach(block => {
+    document.querySelector(`[data-crew-edit-slot="${block.dataset.crewEditBlock}"]`).append(block);
+  });
+  const readViews = [...document.querySelectorAll('.crew-read-view')];
+
+  const profileInput = document.getElementById('crew-profile-input');
+  const profilePreview = document.getElementById('crew-profile-preview');
+  const profileMessage = document.getElementById('crew-profile-message');
+  const originalProfile = profilePreview.src;
+  let previewUrl = null;
+  function resetProfile() {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = null;
+    profileInput.value = '';
+    profilePreview.src = originalProfile;
+    profileMessage.textContent = '';
+  }
+  document.getElementById('crew-profile-reset').addEventListener('click', resetProfile);
+  profileInput.addEventListener('change', () => {
+    const file = profileInput.files[0];
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+      resetProfile();
+      profileMessage.textContent = '5MB 이하의 JPG·PNG·WebP 사진을 선택해주세요.';
+      return;
+    }
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = URL.createObjectURL(file);
+    profilePreview.src = previewUrl;
+    profileMessage.textContent = '';
+  });
+
   function openEditArea() {
     editArea.style.display = 'block';
-
-    editArea.scrollIntoView({
+    editBlocks.forEach(block => { block.hidden = false; });
+    readViews.forEach(view => { view.hidden = true; });
+    if (footerEditBtn) footerEditBtn.hidden = true;
+    document.querySelector('[data-crew-edit-slot="profile"]').scrollIntoView({
       behavior: 'smooth',
       block: 'start'
     });
   }
 
   function closeEditArea() {
+    resetProfile();
     editArea.style.display = 'none';
+    editBlocks.forEach(block => { block.hidden = true; });
+    readViews.forEach(view => { view.hidden = false; });
+    if (footerEditBtn) footerEditBtn.hidden = false;
   }
 
   headerEditBtn?.addEventListener(
@@ -120,9 +159,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const formData = new FormData();
+    if (profileInput.files[0]) formData.append('uploadFile', profileInput.files[0]);
 
     formData.append('title', title);
     formData.append('intro', intro);
+    const introEditor = document.querySelector('[data-crew-edit-slot="intro"] .crew-intro-editor');
+    if (introEditor?.dataset.uploading === 'true') {
+      alert('사진 업로드가 끝난 뒤 저장해주세요.');
+      return;
+    }
+    const blocksInput = introEditor?.querySelector('.intro-blocks-data');
+    if (blocksInput && !blocksInput.disabled) formData.append('introBlocks', blocksInput.value);
     formData.append('member.capacity', capacity);
     formData.append('fee', fee);
     formData.append('address.detail', detail);

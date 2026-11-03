@@ -32,6 +32,12 @@ const regularCrewSchema = new mongoose.Schema(
     {
         title: { type: String, required: true },
         intro: { type: String },
+        introBlocks: [{
+            _id: false,
+            type: { type: String, enum: ['text', 'image'], required: true },
+            text: String,
+            src: String
+        }],
         host: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',

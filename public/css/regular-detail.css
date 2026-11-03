@@ -1,3 +1,23 @@
+.crew-detail-navigation { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.crew-detail-navigation .goback-btn { margin: 0; }
+.crew-detail-navigation form { margin-left: auto; flex-shrink: 0; }
+.crew-disband-btn { background: #dc2626; border-color: #dc2626; color: #fff; min-height: 44px; }
+.crew-disband-btn:hover { background: #b91c1c; border-color: #b91c1c; color: #fff; }
+.crew-disband-btn:focus-visible { outline: 3px solid #fca5a5; outline-offset: 3px; }
+.crew-profile-editor { display: flex; gap: 16px; align-items: flex-start; }
+.crew-profile-editor > img { width: 96px; height: 96px; border-radius: 14px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border); }
+.crew-profile-editor > div { min-width: 0; }
+.crew-profile-editor input { max-width: 100%; }
+#page-crew-detail .save-bar,
+#page-crew-detail .detail-footer {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+#page-crew-detail .detail-footer:has(#footer-edit-btn[hidden]) { display: none; }
+.crew-read-view[hidden], .crew-edit-view[hidden], .crew-edit-fields-source[hidden], #footer-edit-btn[hidden] { display: none; }
+@media (max-width: 600px) { .crew-profile-editor { flex-direction: column; } }
+
 #panel-schedule .activity-card {
   margin: 12px;
 }

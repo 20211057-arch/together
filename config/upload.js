@@ -1,5 +1,7 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+const { randomUUID } = require('crypto');
 
 // 파일명 처리
 const makeFileName = (req, file, cb) => {
@@ -75,4 +77,18 @@ const uploadRegularProfile = multer({
     fileFilter : imageFilter
 });
 
-module.exports = {uploadProfile, uploadBoard, uploadRegularProfile};
+const uploadCrewIntro = multer({
+    storage: multer.diskStorage({
+        destination(req, file, cb) {
+            const directory = path.join(__dirname, '../public/images/reg-crew/intro');
+            fs.mkdir(directory, { recursive: true }, error => cb(error, directory));
+        },
+        filename(req, file, cb) {
+            const extensions = { 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+            cb(null, `${randomUUID()}.${extensions[file.mimetype]}`);
+        }
+    }),
+    limits: { fileSize: 5 * 1024 * 1024, files: 1 },
+    fileFilter: imageFilter
+});
+module.exports = {uploadProfile, uploadBoard, uploadRegularProfile, uploadCrewIntro};
