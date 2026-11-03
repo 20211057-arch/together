@@ -153,6 +153,35 @@ const getRegularMeetings = async (sport = '', limit = 15) => {
     return crews.map(formatMeetingCard);
 };
 
+// Cursor pagination keeps new arrivals from shifting already loaded pages.
+const getLatestMeetingsPage = async (cursor = '') => {
+    const limit = 6;
+    let query = {};
+    if (cursor) {
+        const [date, id] = cursor.split('_');
+        const createdAt = new Date(date);
+        if (!mongoose.isObjectIdOrHexString(id) || !Number.isFinite(createdAt.getTime())) {
+            const error = new Error('잘못된 모임 목록 커서입니다.');
+            error.status = 400;
+            throw error;
+        }
+        query = { $or: [
+            { createdAt: { $lt: createdAt } },
+            { createdAt, _id: { $lt: new mongoose.Types.ObjectId(id) } }
+        ] };
+    }
+    const results = await RegularCrew.find(query)
+        .sort({ createdAt: -1, _id: -1 })
+        .limit(limit + 1);
+    const crews = results.slice(0, limit);
+    const last = crews[crews.length - 1];
+    return {
+        meetings: crews.map(formatMeetingCard),
+        nextCursor: results.length > limit
+            ? `${last.createdAt.toISOString()}_${last._id}` : null
+    };
+};
+
 
 // ── 지도 마커 (instantCrew) ────────────────────
 const getLeafletMatches = async () => {
@@ -561,6 +590,7 @@ const searchCrewsByAI = async (filter, limit = 20) => {
 
 
 module.exports = {
+    getLatestMeetingsPage,
     getRegularMeetings,
     getAIRecommendedMeetings,
     searchCrewsByAI,

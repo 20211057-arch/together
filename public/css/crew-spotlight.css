@@ -21,4 +21,10 @@
 @media(max-width:1200px){.latest-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-content-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:650px){.spotlight-heading{padding:20px 16px 14px}.spotlight-heading h2{font-size:18px}.spotlight-stage{padding:24px 44px 44px}.banner-slide{grid-template-columns:1fr;gap:22px}.banner-copy h3{font-size:28px;margin:14px 0}.banner-copy>p{font-size:12px}.banner-copy>a{margin-top:16px;font-size:13px}.banner-visual{height:210px;border-radius:40px 14px 40px 14px}.spotlight-prev{left:8px}.spotlight-next{right:8px}.spotlight-arrow{width:28px;height:28px}#crew-position{right:44px;bottom:12px}.home-content-grid{padding:0 16px 24px}.latest-grid{grid-template-columns:1fr}.latest-heading h2{font-size:18px}}
 @media(prefers-reduced-motion:reduce){.banner-slide{animation:none}.spotlight-stage{transition:none}}
+.latest-load-more { padding: 20px 0; text-align: center; }
+.latest-load-button[hidden] { display: none; }
+.latest-load-status { margin-bottom: 10px; font-size: 13px; color: var(--text-3); }
+@media (max-width: 768px) {
+  .latest-grid > .latest-card:nth-child(n + 7), .latest-load-more { display: none; }
+}
 .meeting-reasons{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}.meeting-reasons>span{padding:6px 9px;background:#ffffffa6;border-radius:20px;font-size:11px;color:#3d5744}.meeting-score{font-size:11px;color:var(--text-3);margin-top:10px}

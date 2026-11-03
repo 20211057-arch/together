@@ -1,0 +1,7 @@
+<div class="crew-intro-editor" data-target="<%= target %>">
+  <input type="hidden" name="introBlocks" class="intro-blocks-data" disabled value="<%= JSON.stringify(blocks || []) %>">
+  <p class="intro-editor-help">글과 사진을 원하는 순서로 넣어보세요. 사진은 JPG·PNG·WebP, 장당 5MB, 최대 10장입니다.</p>
+  <div class="intro-editor-blocks"></div>
+  <p class="intro-editor-status" role="status" aria-live="polite"></p>
+</div>
+<script src="/js/crew-intro-editor.js" defer></script>

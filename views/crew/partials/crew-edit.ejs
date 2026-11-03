@@ -3,26 +3,34 @@
   data-crew-id="<%= crew._id %>"
   style="display:none;"
 >
-  <div class="manage-section">
-    <div class="manage-section-header">
-      <div class="manage-section-title">
-        ✏️ 크루 정보 수정
-      </div>
-    </div>
-
-
+  <div class="crew-edit-fields-source" hidden>
     <div class="manage-section">
       <div class="manage-section-header">
         <div class="manage-section-title">📝 크루 기본 정보</div>
       </div>
       <div class="manage-section-body">
+        <div data-crew-edit-block="profile" class="crew-edit-view" hidden>
+        <div class="field">
+          <label class="label" for="crew-profile-input">크루 프로필 사진</label>
+          <div class="crew-profile-editor">
+            <img id="crew-profile-preview" src="<%= crew.profileImage || '/images/reg-crew/profile/default-profile-image.jpg' %>" alt="크루 프로필 미리보기">
+            <div>
+              <input type="file" id="crew-profile-input" accept="image/jpeg,image/png,image/webp">
+              <p class="intro-editor-help">JPG·PNG·WebP, 최대 5MB.</p>
+              <button type="button" class="btn btn-outline btn-sm" id="crew-profile-reset">선택 취소</button>
+              <p id="crew-profile-message" role="status" aria-live="polite"></p>
+            </div>
+          </div>
+        </div>
         <div class="field">
           <label class="label">크루 이름</label>
           <input type="text" class="manage-input" id="crewTitle" value="<%= crew.title %>" placeholder="크루 이름을 입력하세요">
         </div>
-        <div class="field">
+        </div>
+        <div class="field crew-edit-view" data-crew-edit-block="intro" hidden>
           <label class="label">크루 소개글</label>
           <textarea class="manage-input" id="crewIntro" style="min-height:110px;"><%= crew.intro %></textarea>
+          <%- include('intro-editor', { target: 'crewIntro', blocks: crew.introBlocks || [] }) %>
         </div>
       </div>
     </div>
@@ -31,7 +39,7 @@
       <div class="manage-section-header">
         <div class="manage-section-title">📋 가입 조건 수정</div>
       </div>
-      <div class="manage-section-body">
+      <div class="crew-edit-view" data-crew-edit-block="conditions" hidden>
         <div class="input-row" style="margin-bottom:12px; grid-template-columns: repeat(3, 1fr);">
           <div class="field" style="margin-bottom:0">
             <label class="label">최대 인원 (2 ~ 50)</label>
@@ -112,6 +120,7 @@
       </div>
     </div>
 
+  </div>
   <div class="save-bar">
     <button
       type="button"
@@ -129,7 +138,6 @@
       💾 변경사항 저장
     </button>
   </div>
-</div>
 </div>
 
 <script src="/js/regularCrew/crew-edit.js"></script>

@@ -4,7 +4,7 @@ const regularCrew = require('../../models/regularCrew');
 const regularController = require('../../controllers/crew/regularController');
 const applicationController = require('../../controllers/crew/applicationController');
 const crewMiddleware = require('../../middlewares/crewMiddleware');
-const { uploadRegularProfile } = require('../../config/upload');
+const { uploadRegularProfile, uploadCrewIntro } = require('../../config/upload');
 const activityRouter = require('../crew/activityRouter');
 
 router.use((req, res, next)=>{
@@ -13,6 +13,13 @@ router.use((req, res, next)=>{
 });
 
 router.use('/act', activityRouter);
+router.post('/intro-images', crewMiddleware.loginValidation, (req, res) => {
+    uploadCrewIntro.single('image')(req, res, error => {
+        if (error) return res.status(400).json({ success: false, message: error.message });
+        if (!req.file) return res.status(400).json({ success: false, message: '사진을 선택해주세요.' });
+        res.json({ success: true, src: `/images/reg-crew/intro/${req.file.filename}` });
+    });
+});
 router.use('/:crewId/attendance', require('./attendanceRouter'));
 
 router.get('/create',

@@ -2,6 +2,14 @@ const stateSelect = document.getElementById('stateSelect');
 const citySelect = document.getElementById('citySelect');
 const AREAS = JSON.parse(stateSelect.dataset.areas);
 
+const sportGroup = document.getElementById('sportGroup');
+const sportError = document.getElementById('sport-error');
+sportGroup.addEventListener('invalid', () => {
+  sportError.hidden = false;
+  sportGroup.scrollIntoView({ block: 'center' });
+}, true);
+sportGroup.addEventListener('change', () => { sportError.hidden = true; });
+
 stateSelect.addEventListener('change', ()=>{
     const citys = AREAS[stateSelect.value] || [];
     const options = citys.map(city=>{
@@ -43,13 +51,8 @@ profileInput.addEventListener('change', (e)=>{
 });
 
 profileReset.addEventListener('click', () => {
-  const fileName = profileImg.src.split('/').pop();
-  if(fileName !== 'default-profile-image.png') {
-    removeImage.value = filePath + fileName;
-  } else {
-    removeImage.value = false;
-  }
-
+  // This is a new crew: clear the pending upload without deleting saved files.
+  if (removeImage) removeImage.value = 'false';
   profileInput.value = '';
-  profileImage.src = filePath + 'default-profile-image.png';
+  profileImage.src = filePath + 'default-profile-image.jpg';
 });

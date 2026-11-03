@@ -75,7 +75,7 @@
     class="manage-section-body"
     style="padding:12px 20px;"
   >
-    <div class="img-upload-area">
+    <div class="img-upload-area crew-read-view">
       <div class="avatar-section" style="border:none;">
         <div class="avatar-preview-wrap">
           <div class="avatar-preview">
@@ -99,6 +99,7 @@
         </div>
       </div>
     </div>
+    <% if (isOwner) { %><div data-crew-edit-slot="profile"></div><% } %>
   </div>
 </div>
 
@@ -110,9 +111,20 @@
   </div>
 
   <div class="manage-section-body">
-    <div class="detail-intro">
-      <%= crew.intro || '등록된 소개가 없습니다.' %>
+    <div class="detail-intro crew-read-view">
+      <% if (crew.introBlocks && crew.introBlocks.length) { %>
+        <% crew.introBlocks.forEach(block => { %>
+          <% if (block.type === 'text') { %>
+            <p class="crew-intro-text"><%= block.text %></p>
+          <% } else if (block.type === 'image' && /^\/images\/reg-crew\/intro\/[a-f0-9-]+\.(jpg|png|webp)$/.test(block.src || '')) { %>
+            <img class="crew-intro-image" src="<%= block.src %>" alt="크루 소개 사진" loading="lazy">
+          <% } %>
+        <% }) %>
+      <% } else { %>
+        <%= crew.intro || '등록된 소개가 없습니다.' %>
+      <% } %>
     </div>
+    <% if (isOwner) { %><div data-crew-edit-slot="intro"></div><% } %>
   </div>
 </div>
 
@@ -124,7 +136,7 @@
   </div>
 
   <div class="manage-section-body">
-    <div class="manage-cond-list">
+    <div class="manage-cond-list crew-read-view">
       <div class="manage-cond-item">
         <span class="manage-cond-icon">🏃</span>
         <span class="manage-cond-label">경기 종목</span>
@@ -176,5 +188,6 @@
         </span>
       </div>
     </div>
+    <% if (isOwner) { %><div data-crew-edit-slot="conditions"></div><% } %>
   </div>
 </div>

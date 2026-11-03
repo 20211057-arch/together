@@ -48,20 +48,25 @@
   }
 </style>
 
-<nav class="sidenav">
+<header class="mobile-nav-header">
+  <button type="button" class="mobile-menu-toggle" aria-controls="site-navigation" aria-expanded="false" aria-label="메뉴 열기">☰</button>
+  <a href="/" class="logo-mark">TOGETHER</a>
+</header>
+<button type="button" class="mobile-nav-backdrop" aria-label="메뉴 닫기" tabindex="-1" hidden></button>
+<script src="/js/mobile-navigation.js" defer></script>
+<nav class="sidenav" id="site-navigation" aria-label="주 메뉴">
   <div class="sidenav-logo">
     <div>
       <a href="/" class="logo-mark">TOGETHER <span style="display:inline-block;vertical-align:middle;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-left:3px;margin-bottom:2px"></span></a>
       <div class="logo-sub">생활 스포츠 매칭</div>
     </div>
+    <button type="button" class="mobile-menu-close" aria-label="메뉴 닫기">✕</button>
   </div>
   <div class="sidenav-menu">
     <div class="nav-section-label">홈</div>
     <button class="nav-item" onclick="location.href='/'">
       <span class="nav-icon">🏠</span> 홈 피드
     </button>
-    </button>
-
     <div class="nav-section-label">매칭</div>
     <button class="nav-item" onclick="location.href='/instant/list'">
       <span class="nav-icon">📍</span> 지도 매칭

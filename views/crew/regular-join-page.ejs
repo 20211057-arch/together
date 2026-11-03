@@ -74,9 +74,14 @@
         class="detail-wrap"
         style="max-width:720px;margin:0 auto;"
       >
-        <a href="/regular/list" class="goback-btn">
-          ← 목록으로
-        </a>
+        <div class="crew-detail-navigation">
+          <a href="/regular/list" class="goback-btn">← 목록으로</a>
+          <% if (isOwner) { %>
+            <form method="POST" action="/regular/delete/<%= crew._id %>" data-crew-confirm="모임을 해산하시겠습니까? 해산한 모임은 복구할 수 없습니다.">
+              <button type="submit" class="btn crew-disband-btn">모임 해산</button>
+            </form>
+          <% } %>
+        </div>
 
         <% if (isOwner || isMember) { %>
           <div class="manage-tab-bar" role="tablist" aria-label="모임 상세 메뉴">
@@ -100,9 +105,6 @@
           <%- include('./partials/crew-edit', {
             crew
           }) %>
-          <div style="margin-bottom:16px;">
-            <button type="button" class="btn btn-outline" onclick="toggleAddForm()">+ 일정 추가</button>
-          </div>
         <% } %>
 
         <!-- 후기 목록 및 작성 -->
@@ -120,9 +122,9 @@
           isOwner,
           isMember
         }) %>
-        <% if (isOwner || isMember) { %>
-          <form method="POST" action="/regular/<%= isOwner ? 'delete' : 'withdraw' %>/<%= crew._id %>" data-crew-confirm="<%= isOwner ? '모임을 해산하시겠습니까? 해산한 모임은 복구할 수 없습니다.' : '모임에서 탈퇴하시겠습니까?' %>" style="margin-top:16px;">
-            <button type="submit" class="action-btn danger"><%= isOwner ? '모임 해산' : '모임 탈퇴' %></button>
+        <% if (isMember) { %>
+          <form method="POST" action="/regular/withdraw/<%= crew._id %>" data-crew-confirm="모임에서 탈퇴하시겠습니까?" style="margin-top:16px;">
+            <button type="submit" class="action-btn danger">모임 탈퇴</button>
           </form>
         <% } %>
         </div>
@@ -135,13 +137,6 @@
       </div>
     </div>
   </div>
-
-<% if (isOwner) { %>
-  <%- include('./partials/schedule-modal', { CONSTANTS }) %>
-  <div class="schedule-overlay" id="scheduleOverlay" onclick="toggleAddForm()"></div>
-  <script type="application/json" id="schedule-config"><%- JSON.stringify({ crewId: String(crew._id) }).replace(/</g, '\\u003c') %></script>
-  <script type="module" src="/js/schedule-create.js"></script>
-<% } %>
 
 <script src="/js/like.js"></script>
 <script src="/socket.io/socket.io.js"></script>

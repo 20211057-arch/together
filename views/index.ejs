@@ -52,7 +52,24 @@
   <!-- Content Grid -->
   <div class="home-content-grid">
 
-    <section class="latest-crews"><div class="latest-heading"><h2>최근에 만들어진 모임</h2><a href="/regular/list">전체 모임 보기 ↗</a></div><div class="latest-grid"><% latestMeetings.forEach(m => { %><a class="latest-card" href="/regular/list/<%= m.id %>"><span class="latest-sport"><%= m.emoji %> <%= m.sportLabel %></span><h3><%= m.title %></h3><p><%= m.district %></p><div><%= m.schedule %> · <%= m.level %></div><footer><span><%= m.current %> / <%= m.total %>명</span><span><%= m.pillLabel %></span></footer></a><% }) %></div><% if (!latestMeetings.length) { %><p>아직 등록된 모임이 없어요.</p><% } %></section>
+    <section class="latest-crews" data-next-cursor="<%= latestNextCursor || '' %>">
+      <div class="latest-heading"><h2>최근에 만들어진 모임</h2><a href="/regular/list">전체 모임 보기 ↗</a></div>
+      <div class="latest-grid">
+        <% latestMeetings.forEach(m => { %>
+          <a class="latest-card" href="/regular/list/<%= m.id %>">
+            <span class="latest-sport"><%= m.emoji %> <%= m.sportLabel %></span>
+            <h3><%= m.title %></h3><p><%= m.district %></p>
+            <div><%= m.schedule %> · <%= m.level %></div>
+            <footer><span><%= m.current %> / <%= m.total %>명</span><span><%= m.pillLabel %></span></footer>
+          </a>
+        <% }) %>
+      </div>
+      <% if (!latestMeetings.length) { %><p>아직 등록된 모임이 없어요.</p><% } %>
+      <div class="latest-load-more" <%= latestNextCursor ? '' : 'hidden' %>>
+        <p class="latest-load-status" role="status" aria-live="polite"></p>
+        <button type="button" class="btn btn-outline latest-load-button">모임 더 보기</button>
+      </div>
+    </section>
 
     <!-- Right Panel -->
     <div style="display:flex;flex-direction:column;gap:14px">
@@ -196,6 +213,7 @@
 </script>
 
 <script src="/js/crew-spotlight.js"></script>
+<script src="/js/latest-meetings.js"></script>
 <script src="/js/handlers/index.js"></script>
 
 </body>
