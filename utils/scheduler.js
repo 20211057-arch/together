@@ -7,6 +7,7 @@ const notiService = require('../services/notiService');
 const { dateKey } = require('../services/crew/attendanceService');
 const User = require('../models/User');
 const mongoose = require('mongoose');
+const { settleAttendance, applyAbsencePenalty } = require('../services/crew/attendanceSettlementService');
 
 async function sendReminder(io, meeting, participants, model, startTime, location, route, now) {
     const userIds = [...new Set(participants.filter(Boolean).map(id => id.toString()))];
@@ -99,6 +100,15 @@ function startScheduler(io) {
         try {
             const now = new Date();
 
+            try {
+                const settled = await settleAttendance(now);
+                if (settled.regular || settled.instant) {
+                    console.log(`[출석 정산] 정기 ${settled.regular}건 / 번개 ${settled.instant}건`);
+                }
+            } catch (err) {
+                console.error('[출석 정산 오류]:', err.message);
+            }
+
             const startedActivities = await crewActivity.find({
                 startTime: { $lte: now },
                 status: { $in: ['모집', '마감'] }
@@ -147,6 +157,7 @@ function startScheduler(io) {
 
             const endedActivities = await crewActivity.find({
                 endTime: { $lte: now },
+                startTime: { $lt: new Date(now.getTime() - 30 * 60 * 1000) },
                 status: '활동'
             });
 
@@ -162,18 +173,20 @@ function startScheduler(io) {
                     const noShowUsers = allParticipants.filter(id => !attendedUsers.includes(id));
                     const attendedCount = attendedUsers.length;
 
-                    if (attendedUsers.length > 0) {
-                        await User.updateMany(
-                            { _id: { $in: attendedUsers } },
-                            { $inc: { honor: 1 } }
-                        );
-                    }
-
-                    if (noShowUsers.length > 0) {
-                        await User.updateMany(
-                            { _id: { $in: noShowUsers } },
-                            { $inc: { honor: -1 } }
-                        );
+                    // QR 출석 정책이 활성화된 경기는 시작 30분 시점에 세분화 정산한다.
+                    // 기존 QR 미사용 경기는 이전 정산 규칙을 유지한다.
+                    if (!act.attendancePolicyEnabled) {
+                        if (attendedUsers.length > 0) {
+                            await User.updateMany(
+                                { _id: { $in: attendedUsers } },
+                                { $inc: { honor: 1 }, $set: { consecutiveAbsenceCount: 0 } }
+                            );
+                        }
+                        if (noShowUsers.length > 0) {
+                            for (const userId of noShowUsers) {
+                                await applyAbsencePenalty(userId, -1);
+                            }
+                        }
                     }
 
                     if (attendedCount > 0) {
@@ -188,8 +201,27 @@ function startScheduler(io) {
                     act.status = '종료';
                     await act.save();
 
+                    if (attendedUsers.length > 1) {
+                        await Promise.all(attendedUsers.map(async (pId) => {
+                            try {
+                                const newNoti = await notiService.createNoti({
+                                    sender: null,
+                                    receiver: pId,
+                                    title: `${act.title} 매너 평가를 남겨주세요`,
+                                    content: '함께 출석한 참가자들의 매너를 평가해주세요.',
+                                    event: 'ACTIVITY_MANNER_REVIEW',
+                                    route: `/${act.crewModel}/act/review/${act._id}`,
+                                    target: []
+                                });
+                                if (io) io.of('/noti').to(`user:${pId}`).emit(newNoti.event, newNoti);
+                            } catch (notiErr) {
+                                console.error(`[매너 평가 알림 발송 실패 - 유저:${pId}]`, notiErr.message);
+                            }
+                        }));
+                    }
+
                     console.log(`🏁 [정산완료] ${act.title}`);
-                    console.log(`   - 출석: ${attendedCount}명 (+1점) / 노쇼: ${noShowUsers.length}명 (-1점)`);
+                    console.log(`   - 출석: ${attendedCount}명 / 미출석: ${noShowUsers.length}명`);
 
                 } catch (error) {
                     console.error(`[정산 에러] ${act.title} 처리 중 오류:`, error.message);

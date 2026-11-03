@@ -4,6 +4,7 @@ const instantCrew = require('../../models/instantCrew');
 const instantController = require('../../controllers/crew/instantController');
 const applicationController = require('../../controllers/crew/applicationController');
 const crewMiddleware = require('../../middlewares/crewMiddleware');
+const activityRouter = require('../crew/activityRouter');
 
 router.use((req, res, next)=>{ 
     req.crewModel = instantCrew;
@@ -11,6 +12,7 @@ router.use((req, res, next)=>{
     next(); 
 });
 
+router.use('/act', activityRouter);
 router.use('/:crewId/attendance', require('./instantAttendanceRouter'));
 
 //번개 모임 페이지
@@ -77,5 +79,6 @@ router.get('/api/:instantId', instantController.getInstantDetailApi);
 
 //노쇼
 router.post('/list/:instantId/noshow/:userId', crewMiddleware.loginValidation, instantController.setNoshow);
+router.post('/list/:instantId/noshow/:userId/cancel', crewMiddleware.loginValidation, instantController.cancelNoshow);
 
 module.exports = router;
