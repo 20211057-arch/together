@@ -58,13 +58,14 @@
           <div class="popup-meta" style="margin:14px 0">
             <span>📍 <%= crew.address.state %> <%= crew.address.city %></span>
             <span>👥 <%= members.length %>/<%= crew.member.capacity %>명</span>
+            <span>⭐ 모임 평점: <%= crew.avgReputation > 0 ? crew.avgReputation.toFixed(1) : '평점 없음' %></span>
           </div>
 
           <div class="popup-host" style="margin:12px 0">
             <div class="popup-host-av"><%= crew.host.name?.charAt(0) %></div>
             <div>
               <div class="popup-host-name"><%= crew.host.name %></div>
-              <div class="popup-host-sub"><%= crew.avgReputation > 0 ? '⭐ ' + crew.avgReputation.toFixed(1) : '평점 없음' %></div>
+              <div class="popup-host-sub">매너 점수: <%= crew.host.privacy?.showManner === false ? '비공개' : `${crew.host.honor ?? 0}점` %></div>
             </div>
           </div>
 

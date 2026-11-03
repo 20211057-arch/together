@@ -125,7 +125,7 @@ function sortCrewByDate(crew) {
 
 async function getCrewDetail(crewId) {
     return await instantCrew.findById(crewId)
-        .populate('host', 'name tel profileImage')
+        .populate('host', 'name tel profileImage honor privacy.showManner')
         .populate('member.memberList.user', 'name tel age gender profileImage')
         .lean();
 }
