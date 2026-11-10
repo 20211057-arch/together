@@ -53,11 +53,13 @@
   <!-- Content Grid -->
   <div class="home-content-grid">
 
-    <section class="latest-crews" data-next-cursor="<%= latestNextCursor || '' %>">
+    <% const latestFallbackImage = '/images/reg-crew/profile/default-profile-image.jpg'; %>
+    <section class="latest-crews" data-next-cursor="<%= latestNextCursor || '' %>" data-fallback-image="<%= latestFallbackImage %>">
       <div class="latest-heading"><h2>최근에 만들어진 모임</h2><a href="/regular/list">전체 모임 보기 ↗</a></div>
       <div class="latest-grid">
         <% latestMeetings.forEach(m => { %>
           <a class="latest-card" href="/regular/list/<%= m.id %>">
+            <img class="latest-thumbnail" src="<%= m.profileImage?.trim() || latestFallbackImage %>" alt="" loading="lazy" decoding="async">
             <span class="latest-sport"><%= m.emoji %> <%= m.sportLabel %></span>
             <h3><%= m.title %></h3><p><%= m.district %></p>
             <div><%= m.schedule %> · <%= m.level %></div>
