@@ -1,6 +1,13 @@
 const { authenticate } = require('passport');
 const crewService = require('../services/crew/crewService');
 const activityService = require('../services/crew/activityService');
+const { dateKey } = require('../services/crew/attendanceService');
+const activityTime = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+});
 
 const activityCreateMiddleware = (req, res, next) => {
     const { content, startTime, endTime, location, gameType, capacity } = req.body;
@@ -15,15 +22,10 @@ const activityCreateMiddleware = (req, res, next) => {
         return res.status(400).json({ message: "장소 정보가 올바르지 않습니다." });
     }
 
-    const now = new Date();
     const start = new Date(startTime);
     const end = new Date(endTime);
 
-    // if (start.getTime() - now.getTime() < 24 * 60 * 60 * 1000) {
-    //     return res.status(400).json({ message: "크루 활동은 24시간 이전에 개설해야 합니다." });
-    // }
-
-    if (start >= end) {
+    if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start >= end) {
         return res.status(400).json({ message: "잘못된 시간 입력입니다." });
     }
 
@@ -37,10 +39,7 @@ const activityCreateMiddleware = (req, res, next) => {
         return res.status(500).json({ message: "크루 정보가 유효하지 않습니다." });
     }
 
-    const formatDate = (date) => date.toISOString().split('T')[0];
-    const formatTime = (date) => date.toTimeString().split(' ')[0].slice(0, 5);
-
-    const title = `${formatDate(start)} / ${formatTime(start)}-${formatTime(end)} : ${gameType === 'team' ? '팀전' : '개인전'}`;
+    const title = `${dateKey(start)} / ${activityTime.format(start)}-${activityTime.format(end)} : ${gameType === 'team' ? '팀전' : '개인전'}`;
 
     req.activityData = {
         crewModel: req.body.crewModel,

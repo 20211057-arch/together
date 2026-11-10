@@ -86,7 +86,9 @@ window.addSchedule = async () => {
         value('new-end-m').padStart(2, '0') +
         ':00+09:00';
     const count = Number(value(type === 'group' ? 'new-team-count' : 'new-count'));
-    if (!date || !Number.isFinite(Date.parse(start)) || Date.parse(end) <= Date.parse(start)) {
+    const startTime = Date.parse(start);
+    const endTime = Date.parse(end);
+    if (!date || !Number.isFinite(startTime) || !Number.isFinite(endTime) || endTime <= startTime) {
         status.textContent = '날짜와 시작·종료 시간을 확인해주세요.';
         return;
     }

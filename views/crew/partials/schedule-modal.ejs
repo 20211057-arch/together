@@ -51,7 +51,7 @@
             <label class="label">시작 시간</label>
             <div style="display:flex;gap:6px;">
                 <select class="manage-input" id="new-start-h" style="flex:1">
-                    <% for(let h=4;h<=22;h++){ %>
+                    <% for(let h=0;h<=23;h++){ %>
                         <option value="<%= h %>" <%= h===10 ? 'selected' : '' %>><%= String(h).padStart(2,'0') %>시</option>
                     <% } %>
                 </select>
@@ -69,7 +69,7 @@
             <label class="label">종료 시간</label>
             <div style="display:flex;gap:6px;">
                 <select class="manage-input" id="new-end-h" style="flex:1">
-                    <% for(let h=5;h<=23;h++){ %>
+                    <% for(let h=0;h<=23;h++){ %>
                         <option value="<%= h %>" <%= h===12 ? 'selected' : '' %>><%= String(h).padStart(2,'0') %>시</option>
                     <% } %>
                 </select>
