@@ -23,7 +23,7 @@
             </div>
             <% if (act.content) { %><div class="activity-desc"><%= act.content %></div><% } %>
           </div>
-          <button type="button" class="btn btn-outline btn-sm" data-activity-id="<%= act._id %>" <%= disabled ? 'disabled' : '' %>><%= entered ? '참가 완료' : ended ? '신청 종료' : full ? '마감' : '참가 신청' %></button>
+          <button type="button" class="btn btn-outline btn-sm" data-activity-id="<%= act._id %>" data-button-state="<%= entered ? 'success' : disabled ? 'unavailable' : '' %>" <%= disabled ? 'disabled' : '' %>><%= entered ? '✓ 참가 완료' : ended ? '— 신청 종료' : full ? '— 마감' : '참가 신청' %></button>
         </div>
       </div>
     <% }) %>

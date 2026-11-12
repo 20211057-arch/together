@@ -70,8 +70,8 @@
 
       <!-- Main Content -->
       <div class="mypage-main">
-      <% const sportIconMap = { soccer:'⚽', baseball:'⚾', basketball:'🏀', bowling:'🎳', tennis:'🎾', badminton:'🏸', tabletennis:'🏓' } %>
-      <% const sportNameMap = { soccer:'축구', baseball:'야구', basketball:'농구', bowling:'볼링', tennis:'테니스', badminton:'배드민턴', tabletennis:'탁구' } %>
+      <% const sportIconMap = { soccer:'⚽', baseball:'⚾', basketball:'🏀', bowling:'🎳', tennis:'🎾', badminton:'🏸', tabletennis:'🏓', fitness: '🏋️', running: '🏃' } %>
+      <% const sportNameMap = { soccer:'축구', baseball:'야구', basketball:'농구', bowling:'볼링', tennis:'테니스', badminton:'배드민턴', tabletennis:'탁구', fitness:'헬스', running:'러닝' } %>
       <div id="regular-section">
         <div class="mypage-card" style="margin-bottom: 16px;">
           <div class="mypage-card-header">
@@ -238,7 +238,7 @@
                   </div>
                   <span class="game-record-state <%= act.attendanceStatus === 'late' ? 'late' : (act.attendanceStatus === 'present' || act.attended ? 'attended' : 'absent') %>"><%= act.attendanceStatus === 'late' ? '지각' : (act.attendanceStatus === 'present' || act.attended ? '출석' : act.attendanceStatus === 'absent' ? '결석' : '미출석') %></span>
                   <% if (act.status === '종료' && act.attended) { %>
-                    <a class="btn btn-primary btn-sm game-record-action" href="/regular/act/review/<%= act._id %>"><%= act.hasReviewed ? '평가 확인' : '매너 평가' %></a>
+                    <a class="btn btn-primary btn-sm game-record-action" data-button-state="<%= act.hasReviewed ? 'success' : '' %>" href="/regular/act/review/<%= act._id %>"><%= act.hasReviewed ? '✓ 평가 완료 · 확인' : '매너 평가' %></a>
                   <% } %>
                 </div>
               <% }) } %>
@@ -254,7 +254,7 @@
                   </div>
                   <span class="game-record-state <%= act.attendanceStatus === 'late' ? 'late' : (act.attendanceStatus === 'present' || act.attended ? 'attended' : 'absent') %>"><%= act.attendanceStatus === 'late' ? '지각' : (act.attendanceStatus === 'present' || act.attended ? '출석' : act.attendanceStatus === 'absent' ? '결석' : '미출석') %></span>
                   <% if (act.status === '종료' && act.attended) { %>
-                    <a class="btn btn-primary btn-sm game-record-action" href="/instant/act/review/<%= act._id %>"><%= act.hasReviewed ? '평가 확인' : '매너 평가' %></a>
+                    <a class="btn btn-primary btn-sm game-record-action" data-button-state="<%= act.hasReviewed ? 'success' : '' %>" href="/instant/act/review/<%= act._id %>"><%= act.hasReviewed ? '✓ 평가 완료 · 확인' : '매너 평가' %></a>
                   <% } %>
                 </div>
               <% }) } %>

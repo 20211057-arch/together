@@ -178,6 +178,8 @@ const kakaoMap = {
                 bowling:     '#a855f7',
                 tennis:      '#eab308',
                 tabletennis: '#10b981',
+                fitness: '#e11d48',
+                running: '#16a34a',
             };
     
             KakaoMarkers = crews.map(crew => {

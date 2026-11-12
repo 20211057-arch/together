@@ -11,7 +11,7 @@ const sportIcon = {
         bowling: "🎳",
         tennis: "🎾",
         badminton: "🏸",
-        tabletennis: "🏓"
+        tabletennis: "🏓", fitness: '🏋️', running: '🏃'
 };
 
 const today = new Date();

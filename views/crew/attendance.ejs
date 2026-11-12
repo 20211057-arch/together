@@ -103,7 +103,7 @@
                                 </a>
                                 <% if (isOwner && activity) { %>
                                     <% if (hostEntry) { %>
-                                        <button type="button" class="btn btn-outline btn-sm" id="check-host-attendance" data-endpoint="<%= base %><%= instant ? '/host-check' : '/activity/' + activity._id + '/host-check' %>" <%= canIssue && !hostEntry.attended ? '' : 'disabled' %>><%= hostEntry.attended ? '내 출석 완료' : '내 출석하기' %></button>
+                                        <button type="button" class="btn btn-outline btn-sm" id="check-host-attendance" data-button-state="<%= hostEntry.attended ? 'success' : '' %>" data-endpoint="<%= base %><%= instant ? '/host-check' : '/activity/' + activity._id + '/host-check' %>" <%= canIssue && !hostEntry.attended ? '' : 'disabled' %>><%= hostEntry.attended ? '✓ 내 출석 완료' : '내 출석하기' %></button>
                                     <% } %>
                                     <button type="button" class="btn btn-primary btn-sm" id="generate-qr" data-endpoint="<%= base %><%= instant ? '/qr' : '/activity/' + activity._id + '/qr' %>" <%= canIssue ? '' : 'disabled' %>>▦ QR 생성</button>
                                 <% } %>

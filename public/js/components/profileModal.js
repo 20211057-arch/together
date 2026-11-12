@@ -25,6 +25,7 @@ export async function openProfileModal(userId) {
 
     const friendBtn = document.getElementById('pm-friend-btn');
     friendBtn.textContent = '+ 친구 추가';
+    friendBtn.dataset.buttonState = '';
     friendBtn.disabled = false;
     friendBtn.style.display = '';
     document.getElementById('pm-friend-since').style.display = 'none';
@@ -153,7 +154,8 @@ function _bindEvents() {
         if (!_socket) { _showToast('⚠️ 로그인이 필요합니다.'); return; }
         if (!_currentUserId) return;
         _socket.emit('friend:request', { receiverId: _currentUserId });
-        document.getElementById('pm-friend-btn').textContent = '요청 완료';
+        document.getElementById('pm-friend-btn').textContent = '◷ 친구 요청 대기 중';
+        document.getElementById('pm-friend-btn').dataset.buttonState = 'pending';
         document.getElementById('pm-friend-btn').disabled = true;
     });
 
@@ -169,6 +171,7 @@ function _bindEvents() {
             const btn = document.getElementById('pm-friend-btn');
             if (btn) {
                 btn.textContent = '+ 친구 추가';
+                btn.dataset.buttonState = '';
                 btn.disabled = false;
             }
             _showToast('⚠️ ' + message);

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { CONSTANTS } = require('../config/constants');
 
 const boardSchema = new mongoose.Schema(
     {
@@ -14,6 +15,8 @@ const boardSchema = new mongoose.Schema(
             required : true
         },
         // enum : 열거형, 속성에 허용되는 값들을 제한
+        sport: { type: String, enum: ['', ...Object.keys(CONSTANTS.SPORTS)], default: '' },
+        views: { type: Number, default: 0 },
         file : {type : String, default : null},
         reputation: { type: Number, default: 0 },
         likedBy: [{

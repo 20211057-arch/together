@@ -22,7 +22,7 @@
   close.addEventListener('click', () => setOpen(false));
   backdrop.addEventListener('click', () => setOpen(false));
   navigation.addEventListener('click', event => {
-    if (event.target.closest('a, .nav-item, .user-chip')) setOpen(false);
+    if (!event.target.closest('.community-toggle') && event.target.closest('a, .nav-item, .user-chip')) setOpen(false);
   });
   document.addEventListener('keydown', event => {
     if (!document.body.classList.contains('mobile-menu-open')) return;

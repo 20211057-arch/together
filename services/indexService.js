@@ -13,7 +13,9 @@ const SPORTS_META = {
     bowling:     { emoji: '🎳', color: '#8B00FF' },
     tennis:      { emoji: '🎾', color: '#00A86B' },
     badminton:   { emoji: '🏸', color: '#FF1493' },
-    tabletennis: { emoji: '🏓', color: '#00BFFF' }
+    tabletennis: { emoji: '🏓', color: '#00BFFF' },
+    fitness: { emoji: '🏋️', color: '#E11D48' },
+    running: { emoji: '🏃', color: '#16A34A' }
 };
 
 // 요일 매핑

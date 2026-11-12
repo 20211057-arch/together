@@ -28,6 +28,8 @@
           <div class="map-filter-chip" data-filter="tennis">테니스</div>
           <div class="map-filter-chip" data-filter="badminton">배드민턴</div>
           <div class="map-filter-chip" data-filter="tabletennis">탁구</div>
+          <div class="map-filter-chip" data-filter="fitness">헬스</div>
+          <div class="map-filter-chip" data-filter="running">러닝</div>
         </div>
       </div>
 
@@ -53,7 +55,7 @@
             <%
               const sportEmojiMap = {
                 soccer:'⚽', baseball:'⚾', basketball:'🏀', bowling:'🎳',
-                tennis:'🎾', badminton:'🏸', tabletennis:'🏓'
+                tennis:'🎾', badminton:'🏸', tabletennis:'🏓', fitness: '🏋️', running: '🏃'
               };
               const sportKr      = CONSTANTS.SPORTS[crew.sport]?.kr || crew.sport;
               const sportEmoji   = sportEmojiMap[crew.sport] || '🏅';

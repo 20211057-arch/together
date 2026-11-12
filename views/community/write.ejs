@@ -30,6 +30,15 @@
         id="writeForm"
       >
 
+        <div class="form-group">
+              <label class="form-label" for="board-sport">운동 종목</label>
+              <select id="board-sport" name="sport" class="form-control">
+                <option value="">일반 / 종목 없음</option>
+                <% Object.entries(sports).forEach(([key, item]) => { %>
+                  <option value="<%= key %>" <%= selectedSport === key ? 'selected' : '' %>><%= item.kr %></option>
+                <% }) %>
+              </select>
+            </div>
         <!-- ① 카테고리 (enum: question | tip | free) -->
         <div class="form-group">
           <label class="form-label">카테고리 <span class="required">*</span></label>
