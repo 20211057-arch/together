@@ -1,4 +1,4 @@
-<div class="manage-panel" id="panel-members" role="tabpanel" aria-labelledby="tab-members">
+<section id="members"><div id="panel-members">
   <div class="member-stat-row" <%- !isOwner ? 'style="grid-template-columns:repeat(2,1fr)"' : '' %>>
     <div class="member-stat-card">
       <span class="member-stat-val"><%= crew.member.memberList.length %></span>
@@ -40,9 +40,9 @@
   <% } %>
 
   <div class="manage-section">
-    <div class="manage-section-header"><div class="manage-section-title">멤버 목록</div></div>
-    <% crew.member.memberList.filter(member => member.user).forEach(member => { %>
-      <div class="member-list-item">
+    <div class="manage-section-header"><div class="manage-section-title">모임 멤버 <%= crew.member.memberList.filter(member => member.user).length %></div></div>
+    <% crew.member.memberList.filter(member => member.user).forEach((member, index) => { %>
+      <div class="member-list-item <%= index >= 8 ? 'club-member-hidden' : '' %>">
         <img src="/images/user-profile/<%= member.user.profileImage || 'default-profile-image.jpg' %>" alt="" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
         <div class="member-info">
           <div class="member-name"><%= member.user.name %></div>
@@ -60,5 +60,8 @@
       </div>
     <% }) %>
   </div>
+<% if (crew.member.memberList.filter(member => member.user).length > 8) { %><button type="button" id="club-members-more" aria-expanded="false">멤버 더보기</button><% } %>
   <p id="member-action-message" role="status"></p>
 </div>
+
+</section>

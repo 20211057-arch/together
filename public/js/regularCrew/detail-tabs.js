@@ -53,7 +53,7 @@ async function postAction(button, url, messageId) {
     }
 }
 
-document.getElementById('panel-schedule').addEventListener('click', event => {
+document.getElementById('panel-schedule')?.addEventListener('click', event => {
     const button = event.target.closest('[data-activity-id]');
     if (!button || button.disabled) return;
     postAction(button, `/regular/act/entry/${encodeURIComponent(button.dataset.activityId)}`, 'schedule-entry-message');

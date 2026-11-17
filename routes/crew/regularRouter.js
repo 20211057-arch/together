@@ -13,6 +13,7 @@ router.use((req, res, next)=>{
 });
 
 router.use('/act', activityRouter);
+router.use('/:crewId/content', require('./contentRouter'));
 router.post('/intro-images', crewMiddleware.loginValidation, (req, res) => {
     uploadCrewIntro.single('image')(req, res, error => {
         if (error) return res.status(400).json({ success: false, message: error.message });

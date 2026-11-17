@@ -1,0 +1,85 @@
+#page-crew-detail .page-body{padding:24px 32px 64px}#page-crew-detail .detail-wrap.club-layout{max-width:1400px;margin:auto;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:40px}.club-main{min-width:0}.club-sidebar{position:sticky;top:90px;align-self:start;padding-top:60px}.club-sidebar h2{font-size:18px;margin:0 0 18px}.club-sidebar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.club-photo{display:block;border:0;padding:0;background:#f3f4f4;cursor:pointer;width:100%;overflow:hidden;border-radius:6px}.club-photo img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.club-sidebar-grid img{aspect-ratio:3/4}.club-sidebar>a{display:block;margin-top:16px;text-align:center;color:var(--text-2);font-size:13px}.club-empty{padding:40px 16px;background:#f7f8f8;border-radius:8px;color:#777;text-align:center}.club-section-heading{display:flex;align-items:baseline;gap:16px;margin:24px 0}.club-section-heading h2{font-size:22px}.club-section-heading span,.club-eyebrow{font-size:13px;color:#777}.club-compose{margin:20px 0;padding:16px;background:#f7f8f8;border-radius:8px}.club-compose summary{font-weight:600;cursor:pointer}.club-compose form{display:grid;gap:14px;margin-top:18px}.club-compose label{display:grid;gap:8px;font-size:14px}.club-compose input,.club-compose textarea{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:6px;background:var(--surface,#fff);color:inherit;font:inherit}.club-post{padding:28px 0;border-bottom:1px solid #eee}.club-post h3{font-size:20px;margin:12px 0}.club-post-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8}.club-text-button{background:none;border:0;color:#666;text-decoration:underline;cursor:pointer;padding:8px}.club-album-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.club-album-grid figure{margin:0;min-width:0}.club-album-grid figcaption{font-size:13px;margin-top:8px;overflow-wrap:anywhere}.club-photo-preview{display:flex;gap:8px;overflow:auto}.club-photo-preview img{height:90px;width:90px;object-fit:cover;border-radius:6px}#club-photo-dialog{max-width:95vw;max-height:95vh;border:0;border-radius:10px;padding:16px;background:#111;color:white}#club-photo-dialog::backdrop{background:#000b}#club-photo-dialog img{max-width:75vw;max-height:75vh;object-fit:contain}#club-photo-dialog button{background:#333;color:white;border:0;padding:12px;cursor:pointer}#club-photo-dialog p{text-align:center;max-width:80vw;overflow-wrap:anywhere}#page-crew-detail .manage-tab-bar{background:var(--surface,#fff);border-bottom:1px solid #eee;border-radius:0;gap:24px;padding:0;margin-bottom:24px}#page-crew-detail .manage-tab{flex:none;padding:18px 8px;background:transparent;border-radius:0;color:var(--text-2);border-bottom:2px solid transparent}#page-crew-detail .manage-tab.active{color:var(--text);border-bottom-color:var(--text);background:transparent}#page-crew-detail .manage-section,#page-crew-detail .manage-group{box-shadow:none;border:0;border-bottom:1px solid #eee;border-radius:0;margin-bottom:28px}#page-crew-detail .manage-section-header{background:none;padding-left:0}#page-crew-detail .manage-section-title{font-size:20px}#panel-schedule,#panel-members{display:block!important}#panel-members .member-stat-row{display:none}#panel-members .member-list-item{border:0;padding:14px 0}#panel-members .member-list-item.club-member-hidden{display:none}#club-members-more{width:100%;padding:14px;background:#f5f6f6;border:0;border-radius:6px;cursor:pointer}.club-cover{width:100%;height:260px;object-fit:cover;border-radius:8px;margin-bottom:24px}.club-hero-info{font-size:13px;color:#777;margin-top:8px}#page-crew-detail .manage-header{padding:8px 0 24px}#page-crew-detail .manage-title{font-size:30px}#page-crew-detail .manage-sport-icon-emoji{width:64px;height:64px;object-fit:cover;border-radius:16px}#page-crew-detail .img-upload-area.crew-read-view{display:none}
+@media(max-width:1100px){#page-crew-detail .detail-wrap.club-layout{grid-template-columns:minmax(0,1fr);max-width:900px}.club-sidebar{display:none}}@media(max-width:640px){#page-crew-detail .page-body{padding:12px 16px 40px}.club-cover{height:190px}#page-crew-detail .manage-title{font-size:23px}.club-album-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.club-section-heading{display:block}.club-section-heading span{display:block;margin-top:8px}#club-photo-dialog img{max-width:90vw;max-height:65vh}#club-photo-dialog{padding:8px}#panel-members .member-list-item{flex-wrap:wrap}}
+#page-crew-detail .manage-section:has(.img-upload-area.crew-read-view):not(:has(.crew-edit-view:not([hidden]))){display:none}
+
+/* A continuous canvas: hierarchy comes from typography and spacing, not cards. */
+body:has(#page-crew-detail) {
+  background: var(--bg, #F7F8F5);
+}
+#page-crew-detail {
+  background: var(--bg, #F7F8F5);
+}
+#page-crew-detail .page-body,
+#page-crew-detail .manage-tab-bar,
+#page-crew-detail .manage-section,
+#page-crew-detail .manage-group,
+#page-crew-detail .manage-section-header,
+#page-crew-detail .manage-section-body,
+#page-crew-detail .manage-header,
+#page-crew-detail .manage-cond-list,
+#page-crew-detail .manage-cond-item,
+#page-crew-detail .activity-card,
+#page-crew-detail .review-card,
+#page-crew-detail .member-list-item,
+#page-crew-detail .member-request-item,
+#page-crew-detail .club-compose,
+#page-crew-detail .club-empty {
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+}
+#page-crew-detail .manage-section {
+  margin-bottom: 48px;
+  overflow: visible;
+}
+#page-crew-detail .manage-section-body {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+#page-crew-detail .manage-section-header {
+  padding: 0 0 20px;
+}
+#page-crew-detail .activity-card {
+  margin: 0;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border, #eee);
+}
+#page-crew-detail .club-compose { padding: 12px 0; }
+#page-crew-detail .club-empty { padding: 32px 0; text-align: left; }
+.club-album-invitation { color: var(--text-2); font-size: 14px; margin: 0 0 24px; }
+.club-sidebar > a { background: var(--bg, #f5f5f5); padding: 12px; border-radius: 6px; }
+
+/* Use the introduction's canvas across the page and fill the available width. */
+body:has(#page-crew-detail) > .main,
+#page-crew-detail .topbar {
+  background: var(--bg, #F7F8F5);
+}
+#page-crew-detail .page-body {
+  padding: 20px 20px 64px 24px;
+}
+#page-crew-detail .detail-wrap.club-layout {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 22vw, 360px);
+  gap: 28px;
+}
+#page-crew-detail .detail-intro {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+#page-crew-detail .club-sidebar {
+  padding-top: 60px;
+}
+@media (max-width: 1100px) {
+  #page-crew-detail .detail-wrap.club-layout {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: none;
+  }
+}
+@media (max-width: 640px) {
+  #page-crew-detail .page-body { padding: 12px 16px 40px; }
+}

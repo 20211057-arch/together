@@ -17,13 +17,16 @@
 
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/regular-detail.css">
+<link rel="stylesheet" href="/css/club-detail.css">
 </head>
 
 <body>
   <%- include('../partials/navbar') %>
 
   <%
-    const currentUserId = userId
+    const clubPosts = locals.posts || [];
+const clubPhotos = locals.photos || [];
+const currentUserId = userId
       ? userId.toString()
       : '';
 
@@ -71,10 +74,9 @@
 
     <div class="page-body">
       <div
-        class="detail-wrap"
-        style="max-width:720px;margin:0 auto;"
+        class="detail-wrap club-layout"
       >
-        <div class="crew-detail-navigation">
+        <div class="club-main"><div class="crew-detail-navigation">
           <a href="/regular/list" class="goback-btn">← 목록으로</a>
           <% if (isOwner) { %>
             <form method="POST" action="/regular/delete/<%= crew._id %>" data-crew-confirm="모임을 해산하시겠습니까? 해산한 모임은 복구할 수 없습니다.">
@@ -83,15 +85,12 @@
           <% } %>
         </div>
 
-        <% if (isOwner || isMember) { %>
-          <div class="manage-tab-bar" role="tablist" aria-label="모임 상세 메뉴">
-            <button type="button" class="manage-tab active" id="tab-info" role="tab" aria-selected="true" aria-controls="panel-info" data-crew-tab="info">모임 상세</button>
-            <button type="button" class="manage-tab" id="tab-schedule" role="tab" aria-selected="false" aria-controls="panel-schedule" tabindex="-1" data-crew-tab="schedule">스케줄</button>
-            <button type="button" class="manage-tab" id="tab-members" role="tab" aria-selected="false" aria-controls="panel-members" tabindex="-1" data-crew-tab="members">멤버</button>
-          </div>
-        <% } %>
-
-        <div class="manage-panel active" id="panel-info" <%- isOwner || isMember ? 'role="tabpanel" aria-labelledby="tab-info"' : '' %>>
+<div class="manage-tab-bar" role="tablist" aria-label="모임 상세 메뉴">
+<button type="button" class="manage-tab active" id="tab-info" role="tab" aria-selected="true" aria-controls="panel-info" tabindex="0" data-crew-tab="info">홈</button>
+<button type="button" class="manage-tab " id="tab-board" role="tab" aria-selected="false" aria-controls="panel-board" tabindex="-1" data-crew-tab="board">게시판</button>
+<button type="button" class="manage-tab " id="tab-album" role="tab" aria-selected="false" aria-controls="panel-album" tabindex="-1" data-crew-tab="album">앨범</button>
+</div><div class="manage-panel active" id="panel-info" role="tabpanel" aria-labelledby="tab-info">
+<img class="club-cover" src="<%= crew.profileImage %>" alt="<%= crew.title %> 대표 사진">
         <!-- 공통 크루 정보 -->
         <%- include('./partials/crew-info', {
           crew,
@@ -107,6 +106,7 @@
           }) %>
         <% } %>
 
+<% if (isOwner || isMember) { %><%- include('./partials/crew-schedule', { acts, currentUserId }) %><% } %>
         <!-- 후기 목록 및 작성 -->
         <%- include('./partials/crew-reviews', {
           crew,
@@ -115,6 +115,7 @@
           hasReviewed
         }) %>
 
+<%- include('./partials/crew-members', { crew, pendingApps, isOwner, hostId }) %>
         <!-- 가입 신청 및 가입 상태 -->
         <%- include('./partials/crew-join-status', {
           crew,
@@ -129,11 +130,11 @@
         <% } %>
         </div>
 
-        <% if (isOwner || isMember) { %>
-          <%- include('./partials/crew-schedule', { acts, currentUserId }) %>
-          <%- include('./partials/crew-members', { crew, pendingApps, isOwner, hostId }) %>
-          <script type="module" src="/js/regularCrew/detail-tabs.js"></script>
-        <% } %>
+<%- include('./partials/crew-content', { isOwner, isMember, currentUserId, clubPosts, clubPhotos }) %>
+</div><aside class="club-sidebar" aria-label="최근 모임 사진"><h2>함께한 순간</h2>
+<% if (!clubPhotos.length) { %><p class="club-empty">아직 등록된 활동 사진이 없어요.</p><% } %>
+<div class="club-sidebar-grid"><% clubPhotos.slice(0,12).forEach((photo,index) => { %><button class="club-photo" data-photo-index="<%= index %>" aria-label="모임 사진 확대"><img src="<%= photo.src %>" alt="<%= photo.caption || '모임 활동 사진' %>" loading="lazy"></button><% }) %></div><a href="#album">앨범 전체 보기 →</a></aside>
+<script type="module" src="/js/regularCrew/detail-tabs.js"></script><script type="module" src="/js/regularCrew/club-content.js"></script>
       </div>
     </div>
   </div>

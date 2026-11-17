@@ -1,0 +1,53 @@
+<section class="manage-panel" id="panel-board" role="tabpanel" aria-labelledby="tab-board">
+  <div class="club-section-heading"><h2>모임 게시판</h2><span>모임장의 소식과 공지</span></div>
+  <% if (!isOwner && !isMember) { %><p class="club-empty">모임에 가입하면 게시글을 볼 수 있어요.</p><% } else { %>
+    <% if (isOwner) { %>
+    <details class="club-compose"><summary>＋ 공지 작성</summary>
+      <form data-content-form action="/regular/<%= crew._id %>/content/posts">
+        <label>제목<input name="title" maxlength="100" required placeholder="모임원에게 전할 소식"></label>
+        <label>내용<textarea name="content" maxlength="10000" required rows="6" placeholder="공지 내용을 작성해주세요."></textarea></label>
+        <button class="btn btn-primary" type="submit">등록하기</button><p role="status"></p>
+      </form>
+    </details>
+    <% } %>
+    <% if (!clubPosts.length) { %><p class="club-empty">아직 등록된 소식이 없어요.</p><% } %>
+    <% clubPosts.forEach(post => { %>
+      <article class="club-post">
+        <span class="club-eyebrow">모임 공지 · <%= new Date(post.createdAt).toLocaleDateString('ko-KR', {timeZone:'Asia/Seoul'}) %></span>
+        <h3><%= post.title %></h3><p class="club-post-body"><%= post.content %></p>
+        <% if (isOwner) { %><details class="club-compose"><summary>수정</summary>
+          <form data-content-form action="/regular/<%= crew._id %>/content/posts/<%= post._id %>/edit">
+            <label>제목<input name="title" value="<%= post.title %>" maxlength="100" required></label>
+            <label>내용<textarea name="content" rows="6" maxlength="10000" required><%= post.content %></textarea></label>
+            <button class="btn" type="submit">저장</button><p role="status"></p>
+          </form></details>
+          <button class="club-text-button" data-content-delete="/regular/<%= crew._id %>/content/posts/<%= post._id %>/delete">삭제</button>
+        <% } %>
+      </article>
+    <% }) %>
+  <% } %>
+</section>
+<section class="manage-panel" id="panel-album" role="tabpanel" aria-labelledby="tab-album">
+  <div class="club-section-heading"><h2>모임 앨범</h2><span>함께한 순간을 남겨보세요</span></div>
+  <% if (isOwner || isMember) { %>
+    <details class="club-compose"><summary>＋ 사진 올리기</summary>
+      <form data-content-form data-photo-form action="/regular/<%= crew._id %>/content/photos" enctype="multipart/form-data">
+        <label>사진 선택<input type="file" name="photos" accept="image/jpeg,image/png,image/webp" multiple required></label>
+        <small>최대 10장 · 장당 5MB · JPG, PNG, WebP</small>
+        <div class="club-photo-preview"></div>
+        <label>설명 (선택)<input name="caption" maxlength="300" placeholder="어떤 순간이었나요?"></label>
+        <button class="btn btn-primary" type="submit">사진 등록</button><p role="status"></p>
+      </form>
+    </details>
+  <% } else { %><p class="club-album-invitation">모임의 활동 사진을 둘러보세요. 가입하면 사진을 함께 올릴 수 있어요.</p><% } %>
+    <% if (!clubPhotos.length) { %><p class="club-empty">첫 번째 운동 사진을 올려보세요.</p><% } %>
+    <div class="club-album-grid">
+    <% clubPhotos.forEach((photo,index) => { %>
+      <figure><button class="club-photo" data-photo-index="<%= index %>" aria-label="사진 확대: <%= photo.caption || '모임 활동 사진' %>"><img src="<%= photo.src %>" alt="<%= photo.caption || '모임 활동 사진' %>" loading="lazy"></button>
+        <% if (photo.caption) { %><figcaption><%= photo.caption %></figcaption><% } %>
+        <% if (isOwner || String(photo.author) === currentUserId) { %><button class="club-text-button" data-content-delete="/regular/<%= crew._id %>/content/photos/<%= photo._id %>/delete">삭제</button><% } %>
+      </figure>
+    <% }) %>
+    </div>
+</section>
+<dialog id="club-photo-dialog"><button type="button" data-photo-close aria-label="닫기">✕</button><button type="button" data-photo-prev aria-label="이전 사진">←</button><img alt="모임 활동 사진"><button type="button" data-photo-next aria-label="다음 사진">→</button><p></p></dialog>

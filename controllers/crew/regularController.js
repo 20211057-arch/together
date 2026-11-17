@@ -97,7 +97,12 @@ const getRegularPage = async (req, res, next) => {
             isOwner || isMember ? activityService.findActsByCrewId(crewId) : [],
             isOwner ? applicationService.findPendingAppsByCrewId(crewId) : []
         ]);
-        res.render('crew/regular-join-page', { crew, isLiked, userId, reviews, acts, pendingApps, CONSTANTS });
+        const canReadContent = isOwner || isMember;
+        const [posts, photos] = await Promise.all([
+            canReadContent ? require('../../models/CrewPost').find({ crew: crewId }).sort({ createdAt: -1 }).lean() : [],
+            require('../../models/CrewPhoto').find({ crew: crewId }).sort({ createdAt: -1 }).lean()
+        ]);
+        res.render('crew/regular-join-page', { crew, isLiked, userId, reviews, acts, pendingApps, posts, photos, CONSTANTS });
     } catch (error) {
         next(error);
     }

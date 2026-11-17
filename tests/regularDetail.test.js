@@ -95,7 +95,7 @@ test('joining disables the button during submission and while approval is pendin
     });
     const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
         .find(([, contents]) => contents.includes('async function refreshRelation'))[1];
-    const button = { style: {} };
+    const button = { style: {}, dataset: {} };
     let init;
     let relation = 'none';
     let requests = 0;
@@ -121,22 +121,30 @@ test('joining disables the button during submission and while approval is pendin
     relation = 'pending';
     finishRequest({ ok: true, status: 201, json: async () => ({ relation }) });
     await firstClick;
-    assert.equal(button.textContent, '가입 승인 대기 중입니다');
+    assert.equal(button.textContent, '◷ 가입 승인 대기 중');
     await init();
     assert.equal(button.disabled, true);
-    assert.equal(button.textContent, '가입 승인 대기 중입니다');
+    assert.equal(button.textContent, '◷ 가입 승인 대기 중');
 });
 
 for (const userId of [null, outsider, member, host]) {
     test('detail tabs and controls reflect role: ' + userId, async () => {
         const html = await ejs.renderFile(path.join(__dirname, '../views/crew/regular-join-page.ejs'), {
             crew, userId, user: userId ? { _id: userId, name: '사용자' } : null,
-            reviews: [], acts: [activity], pendingApps, CONSTANTS, isLiked: false
+            reviews: [], acts: [activity], pendingApps, CONSTANTS, isLiked: false,
+            photos: [{ _id: outsider, author: host, src: '/images/crew-album/public-demo.jpg', caption: '공개 활동 사진' }]
         });
         const joined = userId === host || userId === member;
         assert.equal(html.includes('id="panel-schedule"'), joined);
-        assert.equal(html.includes('id="panel-members"'), joined);
-        assert.equal(html.includes('id="addScheduleForm"'), userId === host);
+        assert.equal(html.includes('id="panel-members"'), true);
+        assert.equal(html.includes('data-crew-tab="members"'), false);
+        assert.ok(html.includes('data-crew-tab="album"'));
+        assert.ok(html.includes('data-crew-tab="board"'));
+        assert.ok(html.includes('/images/crew-album/public-demo.jpg'));
+        assert.equal(html.includes('data-photo-form'), joined);
+        const album = html.slice(html.indexOf('id="panel-album"'));
+        assert.equal(album.includes('data-content-delete='), userId === host);
+        assert.equal(html.includes('id="addScheduleForm"'), false);
         assert.equal(html.includes('data-application-action="accept"'), userId === host);
         assert.equal(html.includes('data-application-action="reject"'), userId === host);
         assert.equal(html.includes('class="kick-btn"'), userId === host);
@@ -160,6 +168,8 @@ for (const userId of [null, outsider, member, host]) {
     test('controller only loads joined activities and owner applications: ' + userId, async t => {
         t.mock.method(regularService, 'getCrewDetail', async () => crew);
         t.mock.method(regularService, 'getCrewReview', async () => []);
+        t.mock.method(require('../models/CrewPost'), 'find', () => ({ sort: () => ({ lean: async () => [] }) }));
+        t.mock.method(require('../models/CrewPhoto'), 'find', () => ({ sort: () => ({ lean: async () => [] }) }));
         const acts = t.mock.method(activityService, 'findActsByCrewId', async () => [activity]);
         const applications = t.mock.method(applicationService, 'findPendingAppsByCrewId', async () => pendingApps);
         const res = response();
@@ -182,6 +192,18 @@ test('schedule disables joined, full, started and closed activities', async () =
         const html = await ejs.renderFile(path.join(__dirname, '../views/crew/partials/crew-schedule.ejs'), { acts: [act], currentUserId: member });
         assert.equal(html.includes(' disabled>'), state !== 'open', state);
     }
+});
+
+test('home shows eight members initially and escapes announcement content', async () => {
+    const many = { ...crew, member: { capacity: 20, memberList: Array.from({length:10}, (_,i) => ({ user: { _id: String(i).padStart(24,'0'), name: '멤버'+i }, joinedAt:new Date() })) } };
+    const html = await ejs.renderFile(path.join(__dirname,'../views/crew/regular-join-page.ejs'), {
+        crew:many, userId:host, user:{_id:host}, reviews:[], acts:[], pendingApps:[], CONSTANTS, isLiked:false,
+        posts:[{_id:outsider,title:'<script>bad()</script>',content:'<img src=x onerror=bad()>',createdAt:new Date()}], photos:[]
+    });
+    assert.equal((html.match(/class="member-list-item club-member-hidden"/g)||[]).length,2);
+    assert.ok(html.includes('id="club-members-more"'));
+    assert.ok(html.includes('&lt;script&gt;bad()&lt;/script&gt;'));
+    assert.equal(html.includes('<img src=x onerror=bad()>'),false);
 });
 
 test('solo application counts each participant once and persists to teamBlue', async () => {
