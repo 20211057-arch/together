@@ -170,35 +170,23 @@ const kakaoMap = {
             KakaoMarkers.forEach(m => m.setMap(null));
             KakaoMarkers = [];
     
-            const sportColor = {
-                soccer:      '#22c55e',
-                baseball:    '#ef4444',
-                basketball:  '#f97316',
-                badminton:   '#06b6d4',
-                bowling:     '#a855f7',
-                tennis:      '#eab308',
-                tabletennis: '#10b981',
-                fitness: '#e11d48',
-                running: '#16a34a',
-            };
-    
             KakaoMarkers = crews.map(crew => {
                 const position = new kakao.maps.LatLng(crew.lat, crew.lng);
-                const color    = sportColor[crew.sport] || '#6366f1';
                 const isFull   = crew.current >= crew.capacity;
-                const isAlmost = !isFull && (crew.current / crew.capacity) >= 0.8;
-    
-                const ringClass = isAlmost ? 'pulse-ring fast' : 'pulse-ring';
-                const wrapClass = isFull   ? 'pulse-wrap closed' : 'pulse-wrap';
     
                 // DOM 객체 생성
-                const contentEl = document.createElement('div');
-                contentEl.className = wrapClass;
+                const contentEl = document.createElement('button');
+                contentEl.type = 'button';
+                contentEl.className = `meeting-pin${isFull ? ' is-full' : ''}`;
+                contentEl.setAttribute('aria-label', `${crew.title || '번개모임'}${isFull ? ' (마감)' : ''}`);
+                contentEl.title = crew.title || '번개모임';
                 contentEl.setAttribute('data-crew-id', crew.id);
                 
                 contentEl.innerHTML = `
-                    <div class="${ringClass}" style="background:${color}"></div>
-                    <div class="pulse-dot"   style="background:${color}"></div>
+                    <svg viewBox="0 0 36 46" width="36" height="46" aria-hidden="true">
+                      <path d="M18 44C15 39 3 27 3 18a15 15 0 0 1 30 0c0 9-12 21-15 26Z" fill="#C8FF00" stroke="#111110" stroke-width="2.5" stroke-linejoin="round"/>
+                      <circle cx="18" cy="18" r="5.5" fill="#111110"/>
+                    </svg>
                 `;
  
                 // 엘리먼트 생성 즉시 클릭 시 이벤트 할당
@@ -215,6 +203,8 @@ const kakaoMap = {
                     position: position,
                     content:  contentEl, // DOM 객체 전달
                     zIndex:   3,
+                    xAnchor:  0.5,
+                    yAnchor:  1,
                 });
     
                 overlay._crewData = crew;

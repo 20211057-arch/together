@@ -6,6 +6,7 @@
 <title>SPORTMATCH — 생활 스포츠 매칭 플랫폼</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css"/>
+<link rel="stylesheet" href="/css/chat.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
@@ -14,13 +15,15 @@
 <%- include('../partials/head', { title: '채팅', pageId: 'page-chat', active: '', route: '/chatRoom/chatPage' }) %>
 
   <div class="page-body-wide" style="flex:1;height:0;overflow:hidden;">
-  <div class="chat-layout" style="height:100%;">
+  <div class="chat-layout <%= room ? 'is-room-list-collapsed' : '' %>" style="height:100%;">
       <!-- Room List -->
 <div class="chat-rooms">
   <div class="chat-rooms-header">
     <div class="chat-rooms-title">채팅방</div>
+    <button type="button" class="chat-rooms-toggle" id="chatRoomsToggle" aria-controls="chatRoomsPanel" aria-expanded="<%= room ? 'false' : 'true' %>"><span class="chat-toggle-label"><%= room ? '목록 펼치기' : '목록 접기' %></span><span class="chat-toggle-chevron" aria-hidden="true">⌃</span></button>
   </div>
 
+  <div class="chat-rooms-panel" id="chatRoomsPanel">
   <!-- 탭 버튼 -->
   <div style="display:flex;border-bottom:1px solid var(--border);">
     <button onclick="location.href='/chatRoom/chatPage?crewType=regular'"
@@ -58,6 +61,7 @@
     <% } %>
   </div>
 </div>
+  </div>
 
       <!-- Chat Area -->
       <div class="chat-area">
@@ -79,7 +83,7 @@
         </button>
       </div>
 
-        <div class="chat-msgs" id="chatMessages" style="height:calc(100vh - 120px);overflow-y:auto;">
+        <div class="chat-msgs" id="chatMessages" aria-live="polite">
           <% if (!room) { %>
             
           <% } else { %>

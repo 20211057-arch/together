@@ -6,6 +6,7 @@
 <title>SPORTMATCH — 생활 스포츠 매칭 플랫폼</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css"/>
+<link rel="stylesheet" href="/css/meeting-search.css"/>
 </head>
 <body>
 <%- include('../partials/navbar') %>
@@ -19,6 +20,7 @@
 
   <div class="page-body regular-list-page">
     <h1 class="regular-list-title">정기모임</h1>
+    <%- include('../partials/meeting-search', { searchId: 'regular-search', placeholder: '모임명, 지역, 종목으로 검색', examples: ['강남 배드민턴', '러닝'] }) %>
     <!-- 정기모임 필터 영역 -->
     <div class="regular-filter-wrap">
 

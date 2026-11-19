@@ -7,7 +7,7 @@ const { loginValidation } = require('../middlewares/crewMiddleware');
 router.get('/chatList/api', loginValidation, chatController.openChatRoom);
 // 채팅방 페이지
 router.get('/chatPage', loginValidation, chatController.getChatRoomList);
-router.patch('/:roomId/mute', chatController.toggleMute);
+router.patch('/:roomId/mute', loginValidation, chatController.toggleMute);
     
 
 module.exports = router;

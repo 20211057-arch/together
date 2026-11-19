@@ -3,6 +3,7 @@ export async function fetchRegularCrewsData(page = 1, filters = {}) {
   const params = new URLSearchParams();
   
   params.append('page', page);
+  if (filters.keyword) params.append('q', filters.keyword);
 
   // 받아온 값 있으면 보내기 (day, sport, ageRange는 배열로 받기)
   if (filters.day && filters.day.length > 0) {

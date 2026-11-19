@@ -150,9 +150,9 @@ const getRegularMeetings = async (sport = '', limit = 15) => {
     return crews.map(formatMeetingCard);
 };
 
-const getLatestMeetingsPage = async (cursor = '') => {
+const getLatestMeetingsPage = async (cursor = '', keyword = '') => {
     const limit = 6;
-    let query = {};
+    let query = require('../utils/meetingSearch').buildSearchQuery(keyword);
     if (cursor) {
         const [date, id] = cursor.split('_');
         const createdAt = new Date(date);
@@ -161,10 +161,10 @@ const getLatestMeetingsPage = async (cursor = '') => {
             error.status = 400;
             throw error;
         }
-        query = { $or: [
+        query.$or = [
             { createdAt: { $lt: createdAt } },
             { createdAt, _id: { $lt: new mongoose.Types.ObjectId(id) } }
-        ] };
+        ];
     }
     const results = await RegularCrew.find(query)
         .sort({ createdAt: -1, _id: -1 })
@@ -549,35 +549,12 @@ const getAIRecommendedMeetings = async (
     return splitMeetings(ranked, featuredCount, gridCount);
 };
 
-// AI 자연어 검색
-const searchCrewsByAI = async (filter, limit = 20) => {
-    const query = {};
-
-    if (filter.sport) query.sport = filter.sport;
-    if (filter.state) query['address.state'] = filter.state;
-    if (filter.city) query['address.city'] = filter.city;
-    if (filter.day && filter.day.length) query.day = { $in: filter.day };
-    if (filter.ageRange) query.ageRange = { $in: [filter.ageRange, 'all'] };
-    if (filter.keyword) {
-        query.$or = [
-            { title: { $regex: filter.keyword, $options: 'i' } },
-            { intro: { $regex: filter.keyword, $options: 'i' } }
-        ];
-    }
-
-    const crews = await RegularCrew.find(query)
-        .sort({ createdAt: -1 })
-        .limit(limit);
-
-    return crews.map(formatMeetingCard);
-};
 
 
 module.exports = {
     getLatestMeetingsPage,
     getRegularMeetings,
     getAIRecommendedMeetings,
-    searchCrewsByAI,
     getLeafletMatches,
     getMySchedule,
     getMyStats,

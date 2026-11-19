@@ -2,10 +2,24 @@ const messageService = require('../services/chatService');
 const ChatRoom = require('../models/ChatRoom');
 
 function chatSocket(chat, io) {
+    chat.use(async (socket, next) => {
+        try {
+            const user = socket.request.user;
+            if (!user) return next(new Error('로그인이 필요합니다.'));
+            await messageService.getChatRoom(socket.handshake.auth.roomId, user._id);
+            socket.data.userId = String(user._id);
+            socket.data.userName = user.name;
+            next();
+        } catch (error) {
+            const denied = new Error('참여 중인 채팅방이 아닙니다.');
+            denied.data = { status: error.status, roomId: socket.handshake.auth.roomId };
+            next(denied);
+        }
+    });
     chat.on('connection', (socket) => {
         const roomId = socket.handshake.auth.roomId;
-        const userId = socket.handshake.auth.userId;
-        const userName = socket.handshake.auth.userName;
+        const userId = socket.data.userId;
+        const userName = socket.data.userName;
 
         if (!roomId || roomId === "" || !userId) {
             return socket.disconnect();
@@ -20,7 +34,7 @@ function chatSocket(chat, io) {
 
         socket.on('chat message', async (msg) => {
             try {
-                if (!msg || !msg.trim()) return;
+                if (typeof msg !== 'string' || !msg.trim()) return;
 
                 const saveChat = await messageService.sendChat(roomId, userId, msg.trim());
 
@@ -38,7 +52,7 @@ function chatSocket(chat, io) {
                 const room = await ChatRoom.findById(roomId).populate('members.user', 'name');
                 if (room) {
                     room.members.forEach(member => {
-                        if (String(member.user._id) === String(userId)) return; // 본인 제외
+                        if (!member.user || String(member.user._id) === String(userId)) return; // 본인 제외
                         if (member.isMuted) return; // 뮤트된 멤버 제외
 
                         //네임스페이스로 알림 쏘기
@@ -53,6 +67,10 @@ function chatSocket(chat, io) {
                 }
 
             } catch (error) {
+                if (error.status === 404) {
+                    socket.emit('room unavailable', { roomId });
+                    return socket.disconnect();
+                }
                 console.error('메시지 처리 오류:', error);
             }
         });

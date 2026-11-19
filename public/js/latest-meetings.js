@@ -1,3 +1,5 @@
+import { bindMeetingSearch } from './modules/meetingSearch.js';
+
 (() => {
   const section = document.querySelector('.latest-crews');
   if (!section) return;
@@ -10,6 +12,39 @@
   let cursor = section.dataset.nextCursor;
   let loading = false;
   let failed = false;
+  let keyword = '';
+  let generation = 0;
+  const heading = section.querySelector('.latest-heading h2');
+  const empty = section.querySelector('.latest-empty');
+
+  bindMeetingSearch('home-search', async query => {
+    const request = ++generation;
+    const previousKeyword = keyword;
+    keyword = query;
+    loading = true;
+    button.disabled = true;
+    try {
+      const response = await fetch(`/api/latest-meetings?q=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error('검색 결과를 불러오지 못했어요.');
+      const data = await response.json();
+      if (!data.ok || !Array.isArray(data.meetings)) throw new Error('검색 결과를 불러오지 못했어요.');
+      if (request !== generation) return;
+      grid.replaceChildren(...data.meetings.map(createCard));
+      heading.textContent = query ? '모임 검색 결과' : '최근에 만들어진 모임';
+      empty.hidden = data.meetings.length > 0;
+      empty.textContent = query ? '조건에 맞는 모임이 없어요. 다른 검색어를 입력해주세요.' : '아직 등록된 모임이 없어요.';
+      cursor = data.nextCursor;
+      loader.hidden = !cursor;
+      button.hidden = !cursor;
+      button.textContent = '모임 더 보기';
+      status.textContent = '';
+      failed = false;
+    } catch (error) {
+      if (request === generation) { keyword = previousKeyword; failed = true; throw error; }
+    } finally {
+      if (request === generation) { loading = false; button.disabled = false; }
+    }
+  });
 
   function replaceBrokenImage(image) {
     if (image.getAttribute('src') !== fallbackImage) image.src = fallbackImage;
@@ -52,25 +87,29 @@
   }
 
   async function loadMore() {
-    if (mobile.matches || loading || !cursor) return;
+    if ((mobile.matches && !keyword) || loading || !cursor) return;
     loading = true;
+    const request = generation;
     failed = false;
     button.disabled = true;
     status.textContent = '모임을 불러오는 중…';
     try {
-      const response = await fetch(`/api/latest-meetings?cursor=${encodeURIComponent(cursor)}`);
+      const response = await fetch(`/api/latest-meetings?cursor=${encodeURIComponent(cursor)}&q=${encodeURIComponent(keyword)}`);
       if (!response.ok) throw new Error('Request failed');
       const data = await response.json();
       if (!data.ok || !Array.isArray(data.meetings)) throw new Error('Invalid response');
+      if (request !== generation) return;
       grid.append(...data.meetings.map(createCard));
       cursor = data.nextCursor;
       status.textContent = cursor ? '' : '모든 모임을 확인했어요.';
       button.hidden = !cursor;
     } catch {
+      if (request !== generation) return;
       failed = true;
       status.textContent = '모임을 불러오지 못했어요. 다시 시도해 주세요.';
       button.textContent = '다시 시도';
     } finally {
+      if (request !== generation) return;
       loading = false;
       button.disabled = false;
       if (!failed) checkVisible();

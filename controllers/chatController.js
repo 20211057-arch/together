@@ -14,7 +14,10 @@ const getChatRoomList = async (req, res, next) => {
         let isMuted = false;
 
         if (roomId) {
-            room = await chatService.getChatRoom(roomId);
+            try { room = await chatService.getChatRoom(roomId, userId); }
+            catch (error) { if (error.status !== 404) throw error; }
+        }
+        if (room) {
             messages = await chatService.getMessage(roomId);
             const member = room.members.find(m => String(m.user) === String(userId));
             isMuted = member ? member.isMuted : false;
@@ -39,7 +42,7 @@ const openChatRoom = async (req, res, next) => {
         const userId = req.user._id;
         const roomId = req.query.roomId;
         const chatRoomList = await chatService.getChatRoomList(userId);
-        const room = await chatService.getChatRoom(roomId);
+        const room = await chatService.getChatRoom(roomId, userId);
         const messages = await chatService.getMessage(roomId);
 
         // sport 조회
@@ -69,6 +72,8 @@ const toggleMute = async (req, res, next) => {
     try {
         const { roomId } = req.params;
         const userId = req.user._id;
+
+        await chatService.getChatRoom(roomId, userId);
 
         const room = await ChatRoom.findOne({ _id: roomId, 'members.user': userId });
         if (!room) return res.status(404).json({ success: false, message: '채팅방 없음' });

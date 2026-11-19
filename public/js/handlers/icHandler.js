@@ -1,4 +1,5 @@
 import kakaoMap from '../modules/mapLoader.js';
+import { bindMeetingSearch, matchesInstantSearch } from '../modules/meetingSearch.js';
 import { apiGetCrew, apiNoshow, apiKick } from './instantCrew/instantApi.js';
 import { renderMemberPopupBody, setPopupState } from './instantCrew/instantPopupMember.js';
 
@@ -8,6 +9,12 @@ let myCrewIds  = [];
 let _maCrewId  = null;
 let _maUserId  = null;
 let currentFilter = 'all';
+let searchQuery = '';
+
+function matchesCrew(crew) {
+    return (currentFilter === 'all' || crew.sport === currentFilter)
+        && matchesInstantSearch(crew, searchQuery);
+}
 
 function timeAgo(dateStr) {
     const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
@@ -28,6 +35,7 @@ function renderCrewList() {
 
     if (myItems.length > 0) {
         const h = document.createElement('div');
+        h.dataset.crewListHeading = '';
         h.style.cssText = `padding:8px 18px;font-size:11px;font-weight:700;letter-spacing:1px;
             text-transform:uppercase;color:var(--text-3);background:var(--bg);border-bottom:1px solid var(--border);`;
         h.textContent = '⚡ 내 모임';
@@ -36,6 +44,7 @@ function renderCrewList() {
     }
     if (otherItems.length > 0) {
         const h = document.createElement('div');
+        h.dataset.crewListHeading = '';
         h.style.cssText = `padding:8px 18px;font-size:11px;font-weight:700;letter-spacing:1px;
             text-transform:uppercase;color:var(--text-3);background:var(--bg);
             border-bottom:1px solid var(--border);border-top:1px solid var(--border);`;
@@ -182,24 +191,35 @@ function setSortTab(el, type) {
     }
     items.forEach(item => container.appendChild(item));
     renderCrewList();
+    applyListFilter();
 }
 function applyListFilter() {
+    let count = 0;
     document.querySelectorAll('.map-item').forEach(item => {
-        const visible = currentFilter === 'all' || item.dataset.sport === currentFilter;
+        const crew = crewsData.find(crew => String(crew.id) === item.dataset.id);
+        const visible = crew && matchesCrew(crew);
         item.style.display = visible ? '' : 'none';
+        if (visible) count++;
     });
+    document.querySelector('.map-list-title').textContent = `${count}개의 매칭`;
+    document.querySelectorAll('[data-crew-list-heading]').forEach(heading => {
+        let next = heading.nextElementSibling;
+        let visible = false;
+        while (next && !next.hasAttribute('data-crew-list-heading')) {
+            if (next.classList.contains('map-item') && next.style.display !== 'none') visible = true;
+            next = next.nextElementSibling;
+        }
+        heading.hidden = !visible;
+    });
+    const empty = document.getElementById('instant-search-empty');
+    if (empty) empty.hidden = count > 0;
+    kakaoMap.getMarkers().forEach(marker => marker.setMap(matchesCrew(marker._crewData) ? window.MAP : null));
 }
 
 function filterToggle(btn, type) {
     document.querySelectorAll('.map-filter-chip').forEach(c => c.classList.remove('on'));
     btn.classList.add('on');
     currentFilter = type;
-
-    kakaoMap.getMarkers().forEach(marker => {
-        const crew    = marker._crewData;
-        const visible = type === 'all' || crew.sport === type;
-        marker.setMap(visible ? window.MAP : null);
-    });
 
     applyListFilter();
 }
@@ -209,6 +229,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     crewsData  = pageData.crews;
     isLoggedIn = pageData.isLoggedIn;
     myCrewIds  = pageData.myCrewIds || [];
+    const list = document.querySelector('.map-list-items');
+    if (!list.querySelector('.map-item')) list.innerHTML = '';
+    const empty = document.createElement('p');
+    empty.id = 'instant-search-empty';
+    empty.className = 'map-search-empty';
+    empty.textContent = '조건에 맞는 번개모임이 없어요. 검색어나 종목을 바꿔보세요.';
+    empty.hidden = true;
+    // Keep the empty message outside the items container, which is reordered by sorting.
+    document.querySelector('.map-list').appendChild(empty);
+    bindMeetingSearch('instant-search', async query => {
+        searchQuery = query;
+        applyListFilter();
+        const positions = kakaoMap.getMarkers().filter(marker => matchesCrew(marker._crewData));
+        if (window.MAP && positions.length) {
+            const bounds = new kakao.maps.LatLngBounds();
+            positions.forEach(marker => bounds.extend(marker.getPosition()));
+            window.MAP.setBounds(bounds);
+        }
+    });
     
 
     await kakaoMap.loadMapByGPS();
@@ -225,6 +264,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
 
     renderCrewList();
+    applyListFilter();
 
     document.querySelectorAll('.map-item').forEach(item => {
         item.addEventListener('click', () => {

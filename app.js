@@ -36,11 +36,15 @@ startScheduler(io);
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 
-app.use(session({
+const sessionMiddleware = session({
     secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
     saveUninitialized: false
-}));
+});
+app.use(sessionMiddleware);
+io.engine.use(sessionMiddleware);
+io.engine.use(passport.initialize());
+io.engine.use(passport.session());
 
 app.use(passport.initialize());
 app.use(passport.session());

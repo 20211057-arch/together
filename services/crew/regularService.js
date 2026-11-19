@@ -6,7 +6,6 @@ const fs = require('fs');
 const User = require('../../models/User');
 const { CONSTANTS } = require('../../config/constants');
 const chatService = require('../chatService'); //
-const ChatRoom = require('../../models/ChatRoom');
 const activityService = require('../crew/activityService');
 const crewActivity = require('../../models/crewActivity');
 const regularCrewReview = require('../../models/regularCrewReview');
@@ -85,6 +84,7 @@ async function getRegularCrews(page = 1) {
 
 async function getRegularAPICrews(filter, page) {
     const query = {};
+    Object.assign(query, require('../../utils/meetingSearch').buildSearchQuery(filter.keyword));
     const limit = 9;
     const skip = (page-1) * limit;
  
@@ -166,10 +166,12 @@ async function getMyCrews(userId, role) {
 
 async function deleteMyCrew(regularCrewId) {
     await regularCrew.findByIdAndDelete(regularCrewId);
+    await chatService.deleteCrewChatRooms(regularCrewId);
 }
 
 async function withdrawMyCrew(regularCrewId, userId) {
     await regularCrew.findByIdAndUpdate(regularCrewId, {$pull: {'member.memberList': {user: userId}}});
+    await chatService.removeMemberFromChatRoom(regularCrewId, userId);
 }
 
 async function getCrewDetail(regularCrewId) {
@@ -236,7 +238,7 @@ async function handleUserDeleted(userId) {
     // 탈퇴 유저가 host인 정기모임의 채팅방 삭제
     const hostCrews = await regularCrew.find({ host: userId }).select('_id');
     const crewIds = hostCrews.map(c => c._id);
-    await ChatRoom.deleteMany({ crewId: { $in: crewIds } });
+    await chatService.deleteCrewChatRooms(crewIds);
 
     // 정기모임 삭제
     await regularCrew.deleteMany({ host: userId });

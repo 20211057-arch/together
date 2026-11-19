@@ -1,6 +1,13 @@
 import { selectedFilters, resetFiltersState } from './state.js';
 import { fetchRegularCrewsData } from './api.js';
 import { renderRegularCards, renderRegularPaging, renderSelectedChips } from './uiRender.js';
+import { bindMeetingSearch } from '../modules/meetingSearch.js';
+
+const clearSearch = bindMeetingSearch('regular-search', async query => {
+  selectedFilters.keyword = query;
+  await loadRegularCrews(1, true);
+});
+let listRequestId = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
   const pagination = document.getElementById('regularPagination');
@@ -42,15 +49,18 @@ if (btnRecruitingOnly) {
 }
 
 // 메인 데이터 로드 함수
-async function loadRegularCrews(page = 1) {
+async function loadRegularCrews(page = 1, reportError = false) {
+  const requestId = ++listRequestId;
   try {
     const data = await fetchRegularCrewsData(page, selectedFilters);
+    if (requestId !== listRequestId) return;
     // 위에서 받아오고 컨트롤러에서 받아온 data의 크루 정보들
     renderRegularCards(data.regularCrews);
     // 컨트롤러에서 받아온 페이징 정보
     renderRegularPaging(data.currentPage, data.totalPages);
   } catch (error) {
     console.error('목록을 불러오는 데 실패했습니다.', error);
+    if (reportError) throw new Error('검색 결과를 불러오지 못했어요. 다시 시도해주세요.');
   }
 }
 
@@ -184,6 +194,7 @@ districtBtns.forEach((button) => {
 if (resetFilterBtn) {
   resetFilterBtn.addEventListener('click', () => {
     resetFiltersState(); // 상태 초기화
+    clearSearch?.();
 
     // UI 상태 초기화
     document.querySelectorAll('.regular-list-page .active, .regular-list-page .selected').forEach(element => {

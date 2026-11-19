@@ -50,8 +50,12 @@ const getRegular = async (req, res, next) => {
 const getRegularAPI = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     try {
+        if (req.query.q !== undefined && (typeof req.query.q !== 'string' || req.query.q.length > 200)) {
+            return res.status(400).json({ success: false, message: '검색어는 200자 이하로 입력해주세요.' });
+        }
         const changeArray = (val) => val ? (Array.isArray(val) ? val : [val]) : undefined;
         const filter = {
+            keyword: (req.query.q || '').trim(),
             day : changeArray(req.query.day),
             isAutoAccept : req.query.isAutoAccept,
             sport : changeArray(req.query.sport),

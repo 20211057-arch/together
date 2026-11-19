@@ -1,0 +1,12 @@
+<form class="meeting-search" id="<%= searchId %>" role="search">
+  <div class="meeting-search-field">
+    <svg class="meeting-search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
+    <label class="meeting-search-label" for="<%= searchId %>-input">모임 검색</label>
+    <input id="<%= searchId %>-input" type="search" maxlength="200" placeholder="<%= placeholder %>" autocomplete="off">
+    <button type="submit">검색</button>
+  </div>
+  <div class="meeting-search-bottom">
+    <div class="meeting-search-examples"><span>예시 검색어</span><% examples.forEach(example => { %><button type="button" data-search-example="<%= example %>"><%= example %></button><% }) %></div>
+    <span class="meeting-search-status" role="status" aria-live="polite"></span>
+  </div>
+</form>

@@ -6,6 +6,42 @@ const parsedUser = window.CHAT_DATA.user;
 const roomId = window.CHAT_DATA.roomId;
 
 let chatSocket = null;
+let chatLoadRequest = 0;
+const chatLayout = document.querySelector('.chat-layout');
+const roomToggle = document.getElementById('chatRoomsToggle');
+
+function setRoomListCollapsed(collapsed) {
+  chatLayout.classList.toggle('is-room-list-collapsed', collapsed);
+  roomToggle.setAttribute('aria-expanded', String(!collapsed));
+  roomToggle.querySelector('.chat-toggle-label').textContent = collapsed ? '목록 펼치기' : '목록 접기';
+}
+roomToggle.addEventListener('click', () => {
+  setRoomListCollapsed(!chatLayout.classList.contains('is-room-list-collapsed'));
+});
+
+function removeChatRoom(data) {
+  if (!data?.roomId) return;
+  const removedId = String(data.roomId);
+  document.querySelectorAll('.chat-room-item').forEach(item => {
+    if (item.dataset.id === removedId) item.remove();
+  });
+  const list = document.querySelector('.chat-rooms-list');
+  if (!list.querySelector('.chat-room-item')) list.textContent = '참여 중인 채팅방이 없습니다.';
+  if (String(window.currentRoomId) !== removedId) return;
+  ++chatLoadRequest;
+  if (chatSocket) { chatSocket.disconnect(); chatSocket = null; }
+  window.currentRoomId = null;
+  chatInput.value = '';
+  chatInput.disabled = true;
+  chatInput.placeholder = '채팅방을 선택해주세요';
+  document.getElementById('chatSendBtn').style.display = 'none';
+  document.getElementById('chatRoomName').textContent = '채팅방을 선택하세요';
+  document.getElementById('chatRoomIcon').textContent = '💬';
+  document.getElementById('muteBtn').hidden = true;
+  chatMessages.innerHTML = '<p class="chat-room-unavailable">탈퇴하거나 삭제된 모임의 채팅이 종료되었습니다.</p>';
+  setRoomListCollapsed(false);
+}
+document.addEventListener('chat-room-removed', event => removeChatRoom(event.detail));
 
 // 날짜 포맷
 function formatTime(dateStr) {
@@ -26,7 +62,11 @@ async function connectSocket(roomId) {
     auth: { roomId, userId: parsedUser._id, userName: parsedUser.name }
   });
   chatSocket.on('connect', () => console.log('소켓연결'));
-  chatSocket.on('connect_error', (error) => console.log('소켓 연결 오류', error));
+  chatSocket.on('connect_error', (error) => {
+    if (error.data?.status === 404) removeChatRoom({ roomId });
+    else console.log('소켓 연결 오류', error);
+  });
+  chatSocket.on('room unavailable', removeChatRoom);
   chatSocket.on('disconnect', (reason) => console.log('소켓 연결 끊김', reason));
   chatSocket.on('join', (data) => inOutMessage(data.chat));
   chatSocket.on('chat message', (data) => renderChatMessage(data));
@@ -39,14 +79,20 @@ document.addEventListener('click', async function(e) {
   if (!chat) return;
 
   const chatRoomId = chat.dataset.id;
+  const request = ++chatLoadRequest;
   try {
     const data = await fetchChatRoomData(chatRoomId);
+    if (request !== chatLoadRequest) return;
     if (data && data.success) {
       renderChatRoomUI(data.room, data.messages, data.currentUserId);
       window.currentRoomId = data.room._id;
       connectSocket(chatRoomId);
+      document.querySelectorAll('.chat-room-item').forEach(item => item.classList.toggle('is-active', item === chat));
+      if (window.matchMedia('(max-width: 768px)').matches) setRoomListCollapsed(true);
     }
   } catch (error) {
+    if (request !== chatLoadRequest) return;
+    if (error.status === 404) removeChatRoom({ roomId: chatRoomId });
     console.error('채팅방 불러오기 실패');
   }
 });
@@ -57,7 +103,7 @@ async function fetchChatRoomData(roomId) {
   if (roomId) params.append('roomId', roomId);
   try {
     const res = await fetch('/chatRoom/chatList/api?' + params.toString());
-    if (!res.ok) throw new Error(`서버 응답오류 ( 상태 코드 : ${res.status})`);
+    if (!res.ok) throw Object.assign(new Error(`서버 응답오류 ( 상태 코드 : ${res.status})`), { status: res.status });
     const data = await res.json();
     if (!data.success) throw new Error('데이터 요청 실패');
     return data;
@@ -83,6 +129,7 @@ function renderChatRoomUI(room, messages, currentUserId) {
   // 뮤트 버튼 상태 초기화
   const muteBtn = document.getElementById('muteBtn');
   if (muteBtn) {
+    muteBtn.hidden = false;
     muteBtn.dataset.muted = room.isMuted || false;
     muteBtn.textContent = room.isMuted ? '🔇' : '🔔';
   }
@@ -129,7 +176,7 @@ function renderChatRoomUI(room, messages, currentUserId) {
 // 채팅 메시지 전송
 function sendChatMsg() {
   const msg = chatInput.value.trim();
-  if (!msg || !window.currentRoomId) return;
+  if (!msg || !window.currentRoomId || !chatSocket?.connected) return;
   chatSocket.emit('chat message', msg);
   chatInput.value = '';
 }

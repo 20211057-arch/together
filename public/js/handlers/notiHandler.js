@@ -98,6 +98,11 @@ export function initNotiSocket(user) {
     refreshUnread();
 
     socket = io('/noti', { auth: { userId: user._id } });
+    socket.on('chat room removed', data => {
+        chatNotices = chatNotices.filter(notice => String(notice.roomId) !== String(data.roomId));
+        updateBadge();
+        document.dispatchEvent(new CustomEvent('chat-room-removed', { detail: data }));
+    });
     initFriendSocket(socket);
     socket.on('connect', refreshUnread);
 

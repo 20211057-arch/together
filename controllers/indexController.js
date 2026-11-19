@@ -1,18 +1,4 @@
 const homeService = require('../services/indexService');
-const aiSearchService = require('../services/aiSearchService');
-
-exports.aiSearch = async (req, res, next) => {
-    try {
-        const q = (req.query.q || '').trim();
-        if (!q) return res.json({ ok: true, meetings: [], filter: null });
-
-        const filter = await aiSearchService.parseSearchQuery(q);
-        const meetings = await homeService.searchCrewsByAI(filter);
-        res.json({ ok: true, meetings, filter });
-    } catch (err) {
-        next(err);
-    }
-};
 
 exports.getHome = async (req, res, next) => {
     try {
@@ -57,10 +43,14 @@ exports.getHome = async (req, res, next) => {
 exports.getLatestMeetingsApi = async (req, res, next) => {
     try {
         const cursor = req.query.cursor || '';
+        const keyword = req.query.q === undefined ? '' : req.query.q;
+        if (typeof keyword !== 'string' || keyword.length > 200) {
+            return res.status(400).json({ ok: false });
+        }
         if (typeof cursor !== 'string' || cursor.length > 100) {
             return res.status(400).json({ ok: false });
         }
-        const page = await homeService.getLatestMeetingsPage(cursor);
+        const page = await homeService.getLatestMeetingsPage(cursor, keyword.trim());
         res.json({ ok: true, ...page });
     } catch (err) {
         next(err);

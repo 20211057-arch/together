@@ -1,7 +1,6 @@
 // services/crew/instantService.js
 const instantCrew = require('../../models/instantCrew');
 const chatService = require('../chatService');
-const ChatRoom = require('../../models/ChatRoom');
 const { CONSTANTS } = require('../../config/constants');
 
 // 종료 시간 필드가 없어 시작 후 3시간까지 진행 중인 매칭으로 표시한다.
@@ -38,6 +37,7 @@ async function getInstantPageData(filter, currentUser) {
         sportKr:      CONSTANTS.SPORTS[c.sport]?.kr || c.sport,
         state:        c.address.state,
         city:         c.address.city,
+        detail:       c.address.detail || '',
         lat:          c.address.lat,
         lng:          c.address.lng,
         current:      c.member.memberList.length,
@@ -137,6 +137,7 @@ async function deleteInstantCrew(crewId, userId) {
     if (crew.host.toString() !== userId.toString()) return { success: false, status: 403, message: '권한이 없습니다.' };
 
     await instantCrew.findByIdAndDelete(crewId);
+    await chatService.deleteCrewChatRooms(crewId);
 
     return { success: true };
 }
@@ -153,6 +154,7 @@ async function kickMember(crewId, hostId, userId) {
     if (crew.member.memberList[memberIndex].role === 'host') return { success: false, status: 400, message: '모임장은 강퇴할 수 없습니다' };
     crew.member.memberList.splice(memberIndex, 1);
     await crew.save();
+    await chatService.removeMemberFromChatRoom(crewId, userId);
 
     return { success: true };
 }
@@ -194,7 +196,7 @@ async function cancelNoshow(crewId, hostId, userId) {
 async function handleUserDeleted(userId) {
     const hostCrews = await instantCrew.find({ host: userId }).select('_id');
     const crewIds = hostCrews.map(c => c._id);
-    await ChatRoom.deleteMany({ crewId: { $in: crewIds } });
+    await chatService.deleteCrewChatRooms(crewIds);
 
     await instantCrew.deleteMany({ host: userId });
 
@@ -211,7 +213,7 @@ async function deleteExpiredInstantChatRooms() {
 
     if (crewIds.length === 0) return { deleted: 0 };
 
-    const result = await ChatRoom.deleteMany({ crewId: { $in: crewIds }, crewType: 'instant' });
+    const result = await chatService.deleteCrewChatRooms(crewIds);
     return { deleted: result.deletedCount };
 }
 

@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/crew-spotlight.css">
+<link rel="stylesheet" href="/css/meeting-search.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
@@ -20,37 +21,10 @@
 
   <%- include('partials/crew-spotlight', { regularMeetings: featuredMeetings }) %>
 
-  <!-- Quick Search -->
-  <div class="search-bar-wrap">
-  <div class="search-bar">
-    <div class="sb-field">
-      <span class="sb-label">종목</span>
-      <select id="qs-sport" class="sb-input">
-        <option value="">전체 종목</option>
-        <option value="⚽">⚽ 축구</option>
-        <option value="🏀">🏀 농구</option>
-        <option value="⚾">⚾ 야구</option>
-        <option value="🎾">🎾 테니스</option>
-        <option value="🏸">🏸 배드민턴</option>
-        <option value="🏓">🏓 탁구</option>
-        <option value="🎳">🎳 볼링</option>
-        <option value="🏋️">🏋️ 헬스</option>
-        <option value="🏃">🏃 러닝</option>
-      </select>
-    </div>
-    <div class="sb-divider"></div>
-    <div class="sb-field">
-      <span class="sb-label">지역</span>
-      <input id="qs-district" class="sb-input" type="text" placeholder="ex) 성동구">
-    </div>
-    <div class="sb-divider"></div>
-    <div class="sb-field">
-      <span class="sb-label">키워드</span>
-      <input id="qs-keyword" class="sb-input" type="text" placeholder="모임 이름">
-    </div>
-    <button class="sb-btn" id="qs-search-btn">검색 →</button>
+  <div class="home-meeting-search">
+    <%- include('partials/meeting-search', { searchId: 'home-search', placeholder: '모임명, 지역, 종목으로 검색', examples: ['강남 배드민턴', '러닝'] }) %>
   </div>
-</div>
+
 
   <!-- Content Grid -->
   <div class="home-content-grid">
@@ -69,7 +43,7 @@
           </a>
         <% }) %>
       </div>
-      <% if (!latestMeetings.length) { %><p>아직 등록된 모임이 없어요.</p><% } %>
+      <p class="latest-empty" <%= latestMeetings.length ? 'hidden' : '' %>>아직 등록된 모임이 없어요.</p>
       <div class="latest-load-more" <%= latestNextCursor ? '' : 'hidden' %>>
         <p class="latest-load-status" role="status" aria-live="polite"></p>
         <button type="button" class="btn btn-outline latest-load-button">모임 더 보기</button>
@@ -218,7 +192,7 @@
 </script>
 
 <script src="/js/crew-spotlight.js"></script>
-<script src="/js/latest-meetings.js"></script>
+<script type="module" src="/js/latest-meetings.js"></script>
 <script src="/js/handlers/index.js"></script>
 
 </body>
