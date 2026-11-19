@@ -37,7 +37,7 @@ function buildRow(m, crewId, isHost) {
     const currentUserId = pageData.currentUserId;
     const isMe = currentUserId && u._id && u._id.toString() === currentUserId;
     const joinedAt = m.joinedAt
-        ? new Date(m.joinedAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'numeric', day: 'numeric' })
+        ? new Date(m.joinedAt).toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: 'numeric', day: 'numeric' })
         : '-';
     const statusBadge = m.status === 'confirmed'
         ? '<span style="padding:2px 8px;border-radius:12px;background:#dcfce7;color:#15803d;font-size:12px;">참가확정</span>'
@@ -205,7 +205,7 @@ export function renderMemberPopupBody() {
             <div class="popup-title" style="margin-bottom:4px;">${crew.title}</div>
             <div style="font-size:13px;color:#aaa;margin-bottom:16px;">
                 ${crew.address?.state} ${crew.address?.city}
-                &nbsp;·&nbsp; ⏰ ${crew.meetAt ? new Date(crew.meetAt).toLocaleString('ko-KR') : '미정'}
+                &nbsp;·&nbsp; ⏰ ${crew.meetAt ? new Date(crew.meetAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) : '미정'}
             </div>
             ${topTabs}${stats}${tabs}${cards}`;
         return;
@@ -254,7 +254,7 @@ export function renderMemberPopupBody() {
         <div class="popup-title" style="margin-bottom:4px;">${crew.title}</div>
         <div style="font-size:13px;color:#aaa;margin-bottom:16px;">
             ${crew.address?.state} ${crew.address?.city}
-            &nbsp;·&nbsp; ⏰ ${crew.meetAt ? new Date(crew.meetAt).toLocaleString('ko-KR') : '미정'}
+            &nbsp;·&nbsp; ⏰ ${crew.meetAt ? new Date(crew.meetAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) : '미정'}
         </div>
         ${topTabs}${stats}${tabs}${filterBar}
         <div style="overflow-x:auto;border-radius:10px;border:1px solid #f0f0f0;">

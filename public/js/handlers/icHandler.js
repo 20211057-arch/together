@@ -78,7 +78,7 @@ function showMapPopup(data) {
     document.getElementById('pp-reputation').textContent = data.avgReputation > 0
         ? '⭐ ' + data.avgReputation.toFixed(1) : '평점 없음';
     document.getElementById('pp-time').textContent =
-        '⏰ ' + (data.meetAt ? new Date(data.meetAt).toLocaleString('ko-KR') : '미정') +
+        '⏰ ' + (data.meetAt ? new Date(data.meetAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) : '미정') +
         '  🕐 ' + timeAgo(data.createdAt);
 
     const applyBtn = document.getElementById('popup-apply-btn');

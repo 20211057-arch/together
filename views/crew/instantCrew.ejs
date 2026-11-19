@@ -84,7 +84,7 @@
               </div>
 
               <div class="mi-meta">
-                <span>⏰ <%= crew.meetAt ? new Date(crew.meetAt).toLocaleString('ko-KR', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'}) : '미정' %></span>
+                <span>⏰ <%= crew.meetAt ? new Date(crew.meetAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul',month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'}) : '미정' %></span>
                 <span><%= current %>/<%= capacity %>명</span>
                 <span>🙋 <%= crew.host.name || '익명' %></span>
                 <span><%= crew.isAutoAccept ? '⚡ 자동수락' : '✋ 수동수락' %></span>

@@ -14,7 +14,9 @@ export async function openProfileModal(userId) {
 
     document.getElementById('pm-name').textContent = '...';
     document.getElementById('pm-meta').textContent = '...';
-    document.getElementById('pm-score').textContent = '0';
+    document.getElementById('pm-score').textContent = '0회';
+    document.getElementById('pm-score').style.color = 'var(--primary)';
+    document.getElementById('pm-score').style.fontSize = '22px';
     document.getElementById('pm-honor').textContent = '0점';
     document.getElementById('pm-honor').style.color = 'var(--primary)';
     document.getElementById('pm-honor').style.fontSize = '18px';
@@ -67,7 +69,7 @@ export async function openProfileModal(userId) {
 
         const genderKor = u.gender === 'male' ? '남성' : '여성';
         document.getElementById('pm-meta').textContent = `${genderKor} · ${u.age}세`;
-        document.getElementById('pm-score').textContent = u.reputation ?? 0;
+        document.getElementById('pm-score').textContent = `${Number.isFinite(Number(u.absenceCount)) ? Math.max(0, Math.trunc(Number(u.absenceCount))) : 0}회`;
 
         if (u.privacy?.showManner === false) {
             document.getElementById('pm-honor').textContent = '비공개';
@@ -200,8 +202,8 @@ function _injectHTML() {
                         </div>
                         <div style="display:flex;align-items:center;gap:14px;text-align:center;flex-shrink:0;">
                             <div>
-                                <div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--primary);" id="pm-score">0</div>
-                                <div style="font-size:11px;color:var(--text-3);white-space:nowrap;">활동 점수</div>
+                                <div style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--primary);" id="pm-score">0회</div>
+                                <div style="font-size:11px;color:var(--text-3);white-space:nowrap;">누적 결석</div>
                             </div>
                             <div style="width:1px;height:34px;background:var(--border);"></div>
                             <div>
