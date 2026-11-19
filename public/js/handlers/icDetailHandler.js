@@ -1,4 +1,4 @@
-import { initProfileModal, openProfileModal } from '../../components/profileModal.js';
+import { initProfileModal, openProfileModal } from '../components/profileModal.js';
 document.addEventListener('DOMContentLoaded', () => {
     initProfileModal(null, CURRENT_USER_ID);
 
