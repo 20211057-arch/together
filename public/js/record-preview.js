@@ -23,7 +23,6 @@
         workspace.hidden = view === 'pick';
         document.querySelector('.journal').hidden = view !== 'list';
         document.querySelector('.editor').hidden = view !== 'detail';
-        document.querySelector('.ai-panel').hidden = view !== 'detail';
         getElement('activity-picker').hidden = view !== 'pick';
         getElement('flow-nav').hidden = view === 'list';
         getElement('new-record').hidden = view !== 'list';
@@ -137,9 +136,7 @@
             `#sport-filter option[value="${activity.sport}"]`
         );
         getElement('activity-meta').textContent =
-            `${activity.date} · ${sportOption?.textContent.trim() || activity.sport} · ${activity.title}`;
-        resetConversation();
-        showView('detail');
+            `${activity.date} · ${sportOption?.textContent.trim() || activity.sport} · ${activity.title}`;        showView('detail');
     });
 
     getElement('change-activity').addEventListener('click', () => showView('pick'));
@@ -182,25 +179,6 @@
         tabletennis: '🏓', fitness: '🏋️', running: '🏃'
     };
 
-    // 다른 기록을 선택하면 이전 기록의 예시 대화를 비운다.
-    function resetConversation() {
-        const message = document.createElement('div');
-        message.className = 'ai-bubble';
-        message.textContent =
-            records.length || draft
-                ? 'AI 피드백은 아직 연결되지 않았어요. 아래에서 예시 대화 흐름을 체험할 수 있어요.'
-                : '기록이 생기면 이곳에서 함께 돌아볼 수 있어요.';
-
-        getElement('conversation').replaceChildren(message);
-        getElement('question').value = '';
-        getElement('goal-suggestion').hidden = true;
-        document
-            .querySelectorAll('[data-question], #question, #question-form button')
-            .forEach((element) => {
-                element.disabled = !records.length && !draft;
-            });
-    }
-
     // 이전 기록은 종목으로, 모임에서 작성한 기록은 저장된 모임명으로 표시한다.
     function selectRecord(record, button) {
         returnFocus = button;
@@ -231,10 +209,7 @@
             const isSelected = recordButton.dataset.recordId === record._id;
             recordButton.classList.toggle('selected', isSelected);
             recordButton.setAttribute('aria-pressed', String(isSelected));
-        });
-
-        resetConversation();
-        showView('detail');
+        });        showView('detail');
     }
 
     document.querySelectorAll('[data-record-id]').forEach((button) => {
@@ -323,47 +298,12 @@
         }
     });
 
-    function showExampleReply(question) {
-        if ((!records.length && !draft) || !question.trim()) {
-            return;
-        }
-
-        const userMessage = document.createElement('div');
-        userMessage.className = 'user-bubble';
-        userMessage.textContent = question.trim();
-
-        const reply = document.createElement('div');
-        reply.className = 'ai-bubble';
-        reply.textContent =
-            '[예시 답변 · 실제 AI 분석 아님] 오늘 잘됐던 순간에 내가 한 행동은 무엇이었나요? 다음 운동에서도 시도해볼 행동 하나를 떠올려보세요.';
-
-        const conversation = getElement('conversation');
-        conversation.append(userMessage, reply);
-        conversation.scrollTop = conversation.scrollHeight;
-        getElement('question').value = '';
-    }
-
-    getElement('question-form').addEventListener('submit', (event) => {
-        event.preventDefault();
-        showExampleReply(getElement('question').value);
-    });
-
-    document.querySelectorAll('[data-question]').forEach((button) => {
-        button.disabled = records.length === 0;
-        button.addEventListener('click', () => showExampleReply(button.dataset.question));
-    });
-
-    getElement('question').disabled = records.length === 0;
-    document.querySelector('#question-form button').disabled = records.length === 0;
-
     getElement('theme').addEventListener('click', () => {
         document.body.classList.toggle('dark');
     });
 
     showView('list');
     getElement('save-record').hidden = true;
-    resetConversation();
-
     const savedId = new URLSearchParams(window.location.search).get('saved');
 
     if (records.some((record) => record._id === savedId)) {

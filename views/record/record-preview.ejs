@@ -127,7 +127,7 @@
                 <% } %>
               </nav>
             <% } %>
-            <div class="journal-note">🔒 기록과 AI 대화는 나만 볼 수 있어요.</div>
+            <div class="journal-note">🔒 운동 기록은 나만 볼 수 있어요.</div>
           </section>
 
           <section class="editor card" aria-label="운동 돌아보기" hidden>
@@ -193,50 +193,6 @@
             </form>
           </section>
 
-          <aside class="ai-panel card" aria-label="AI 피드백" hidden>
-            <div class="panel-heading">
-              <h2>
-                <span class="ai-mark">✦</span>
-                AI와 돌아보기
-              </h2>
-              <span class="demo-badge">체험</span>
-            </div>
-            <div class="ai-content">
-              <p class="ai-intro">
-                혼자 정리하기 어려웠던 생각,
-                <br>
-                오늘의 기록에서 함께 찾아봐요.
-              </p>
-              <div class="context-pill">✎ 현재 선택한 기록을 바탕으로 대화해요</div>
-              <div id="conversation" class="conversation" role="log" aria-live="polite">
-                <div class="ai-bubble">
-                  <strong>오늘 운동은 어땠나요? ✦</strong>
-                  <p>기록을 남기고 궁금한 점을 물어보세요. 다음 운동에서 시도할 작은 목표를 함께 생각해볼게요.</p>
-                </div>
-              </div>
-
-              <div id="goal-suggestion" class="goal-suggestion" hidden>
-                <span>⚑ 다음 목표 제안</span>
-                <p id="suggested-goal"></p>
-                <button class="btn btn-outline btn-sm" id="apply-goal" disabled>목표 저장 (준비 중)</button>
-              </div>
-              <div class="suggested-questions">
-                <button data-question="다음 운동 목표를 같이 정해줘">다음 목표를 같이 정해줘 ↗</button>
-                <button data-question="내 기록을 돌아볼 질문을 해줘">돌아볼 질문을 해줘 ↗</button>
-              </div>
-
-              <form id="question-form" class="question-form">
-                <label class="sr-only" for="question">AI에게 질문하기</label>
-                <textarea id="question" rows="2" maxlength="500" placeholder="오늘 운동에 대해 궁금한 점을 적어보세요"></textarea>
-                <button type="submit" aria-label="질문 보내기">↑</button>
-              </form>
-              <p class="demo-note">
-                현재는 예시 답변으로 대화 흐름을 체험해요.
-                <br>
-                입력한 내용은 서버에 전송되지 않아요.
-              </p>
-            </div>
-          </aside>
         </div>
         <div class="page-foot">
           TOGETHER

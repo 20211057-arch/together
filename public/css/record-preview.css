@@ -137,7 +137,7 @@
   color: var(--text-2);
 }
 
-/* 기록 목록 · 작성 영역 · AI 패널 배치 */
+/* 기록 목록 · 작성 영역 배치 */
 .workspace {
   display: grid;
   grid-template-columns: 230px minmax(320px,1fr) 310px;
@@ -395,149 +395,6 @@ input::placeholder {
   white-space: nowrap;
 }
 
-/* AI 대화와 다음 목표 제안 */
-.ai-panel {
-  border-top: 3px solid var(--accent);
-}
-
-.ai-mark {
-  font-size: 18px;
-  margin-right: 4px;
-}
-
-.ai-content {
-  padding: 18px;
-}
-
-.ai-intro {
-  font-size: 13px;
-  line-height: 1.8;
-  color: var(--text-2);
-}
-
-.context-pill {
-  font-size: 9px;
-  color: var(--text-3);
-  margin: 15px 0 20px;
-  padding: 9px;
-  background: var(--bg);
-  border-radius: 6px;
-}
-
-.conversation {
-  max-height: 300px;
-  overflow: auto;
-  scrollbar-width: thin;
-}
-
-.ai-bubble {
-  font-size: 12px;
-  line-height: 1.9;
-  background: var(--bg);
-  padding: 15px;
-  border-radius: 0 12px 12px;
-  margin-bottom: 12px;
-}
-
-.ai-bubble strong {
-  font-size: 12px;
-}
-
-.ai-bubble p {
-  color: var(--text-2);
-  margin-top: 7px;
-}
-
-.user-bubble {
-  font-size: 12px;
-  line-height: 1.8;
-  background: var(--primary-soft);
-  padding: 12px;
-  border-radius: 12px 0 12px 12px;
-  margin: 12px 0 12px 22px;
-  overflow-wrap: anywhere;
-}
-
-.goal-suggestion {
-  border: 1px solid #d9e5bc;
-  background: #faffef;
-  color: #283618;
-  border-radius: 9px;
-  padding: 14px;
-  margin: 12px 0;
-}
-
-.goal-suggestion>span {
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.goal-suggestion p {
-  font-size: 12px;
-  line-height: 1.8;
-  margin: 8px 0;
-}
-
-.goal-suggestion button {
-  font-size: 10px;
-  color: #283618;
-}
-
-.suggested-questions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 7px;
-  margin: 20px 0;
-}
-
-.suggested-questions button {
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: var(--surface);
-  font-size: 10px;
-  padding: 8px 10px;
-  color: var(--text-2);
-}
-
-.question-form {
-  position: relative;
-}
-
-.question-form textarea {
-  border: 1px solid var(--border-strong);
-  background: var(--surface);
-  color: var(--text);
-  padding: 12px 42px 12px 12px;
-  border-radius: 9px;
-  font-size: 11px;
-  width: 100%;
-  line-height: 1.8;
-  resize: vertical;
-  min-height: 80px;
-}
-
-.question-form button {
-  position: absolute;
-  bottom: 12px;
-  right: 9px;
-  width: 29px;
-  height: 29px;
-  border: 0;
-  background: var(--text);
-  color: var(--bg);
-  border-radius: 7px;
-  font-size: 18px;
-}
-
-.demo-note {
-  font-size: 9px;
-  text-align: center;
-  color: var(--text-3);
-  line-height: 1.8;
-  margin-top: 11px;
-}
-
 .page-foot {
   margin-top: 27px;
   color: var(--text-3);
@@ -597,7 +454,7 @@ input::placeholder {
 }
 
 @media (min-width: 1550px) {
-  /* 기록 목록 · 작성 영역 · AI 패널 배치 */
+  /* 기록 목록 · 작성 영역 배치 */
 .workspace {
     grid-template-columns: 260px minmax(380px,1fr) 350px;
   }
@@ -613,15 +470,11 @@ input::placeholder {
 }
 
 @media (max-width: 1250px) {
-  /* 기록 목록 · 작성 영역 · AI 패널 배치 */
+  /* 기록 목록 · 작성 영역 배치 */
 .workspace {
     grid-template-columns: 200px minmax(300px,1fr);
   }
 
-  /* AI 대화와 다음 목표 제안 */
-.ai-panel {
-    grid-column: 2;
-  }
 
   .overview-message {
     display: none;
@@ -645,15 +498,11 @@ input::placeholder {
   .logo-sub,
   .nav-section-label,
   .sidenav-footer,
-  /* 기록 목록 · 작성 영역 · AI 패널 배치 */
+  /* 기록 목록 · 작성 영역 배치 */
 .workspace {
     grid-template-columns: 1fr;
   }
 
-  /* AI 대화와 다음 목표 제안 */
-.ai-panel {
-    grid-column: auto;
-  }
 
   .record-list {
     display: flex;
@@ -823,8 +672,7 @@ input::placeholder {
 .workspace[data-view="list"] .record-item strong { font-size: 16px; }
 .workspace[data-view="list"] .record-item p { font-size: 12px; }
 .workspace[data-view="list"] .empty-records { grid-column: 1 / -1; align-self: center; }
-.workspace[data-view="detail"] { grid-template-columns: minmax(0, 1fr) 330px; }
-.workspace[data-view="detail"] .ai-panel { grid-column: auto; }
+.workspace[data-view="detail"] { grid-template-columns: minmax(0, 1fr); }
 .flow-nav { display: flex; align-items: center; gap: 18px; margin-bottom: 18px; }
 .flow-nav span, .picker-note { font-size: 12px; color: var(--text-3); line-height: 1.8; }
 #activity-picker { max-width: 760px; margin: 0 auto; }
