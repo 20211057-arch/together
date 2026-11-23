@@ -10,6 +10,7 @@ const activityService = require('../crew/activityService');
 const crewActivity = require('../../models/crewActivity');
 const regularCrewReview = require('../../models/regularCrewReview');
 const { parseCrewIntro } = require('../../utils/crewIntro');
+const imageStore = require('../imageStore');
 
 async function createRegCrew(data, profileFile, host) {
     if (typeof data.sport !== 'string' || !Object.hasOwn(CONSTANTS.SPORTS, data.sport)) {
@@ -226,6 +227,7 @@ async function postCrewUpdate(regularCrewId, updateData, updateFile) {
         if(crew.profileImage && crew.profileImage != '/images/reg-crew/profile/default-profile-image.jpg') {
             const oldPath = path.join(__dirname, '../../public/images/reg-crew/profile', path.basename(crew.profileImage));
             if(fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+            await imageStore.deleteImage(crew.profileImage);
         }
         if (updateFile) updateData.profileImage = `/images/reg-crew/profile/${updateFile.filename}`;
         else updateData.profileImage = '/images/reg-crew/profile/default-profile-image.jpg';

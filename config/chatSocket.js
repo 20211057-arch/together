@@ -27,10 +27,7 @@ function chatSocket(chat, io) {
 
         socket.join(roomId);
 
-        socket.to(roomId).emit("join", {
-            user: "system",
-            chat: `${userName}님이 접속하였습니다.`
-        });
+        // Opening, switching or reconnecting a chat is not a membership change.
 
         socket.on('chat message', async (msg) => {
             try {
@@ -75,12 +72,6 @@ function chatSocket(chat, io) {
             }
         });
 
-        socket.on('disconnect', () => {
-            socket.to(roomId).emit('exit', {
-                user: 'system',
-                chat: `${userName}님이 퇴장하셨습니다`,
-            });
-        });
     });
 }
 

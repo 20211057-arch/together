@@ -124,6 +124,22 @@ test('chat sockets use the logged-in session rather than the claimed user', asyn
     await middleware({ ...socket, request: {} }, error => assert.ok(error));
 });
 
+test('opening and disconnecting a chat does not announce membership changes', () => {
+    let connect;
+    const broadcasts = [], handlers = {};
+    chatSocket({ use() {}, on(event, handler) { if (event === 'connection') connect = handler; } }, {});
+    const socket = {
+        handshake: { auth: { roomId } }, data: { userId, userName: 'member' },
+        join() {}, disconnect() {},
+        to() { return { emit: (...args) => broadcasts.push(args) }; },
+        on(event, handler) { handlers[event] = handler; }
+    };
+    connect(socket);
+    handlers.disconnect?.();
+    assert.deepEqual(broadcasts, []);
+    assert.equal(typeof handlers['chat message'], 'function');
+});
+
 test('real Socket.io handshake shares Passport login and rejects an anonymous claimed member', { timeout: 6000 }, async t => {
     const express = require('express');
     const session = require('express-session');

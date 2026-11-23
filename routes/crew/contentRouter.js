@@ -4,6 +4,7 @@ const multer = require('multer');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
+const imageStore = require('../../services/imageStore');
 const Crew = require('../../models/regularCrew');
 const Post = require('../../models/CrewPost');
 const Photo = require('../../models/CrewPhoto');
@@ -59,11 +60,18 @@ router.post('/photos', (req, res, next) => upload.array('photos', 10)(req, res, 
             const name = `${randomUUID()}.${extensions[file.mimetype]}`;
             const target = path.join(directory, name);
             await fs.writeFile(target, file.buffer); written.push(target);
+            await imageStore.saveImage(`/images/crew-album/${name}`, file.buffer);
             docs.push({ crew: req.params.crewId, author: req.user._id, src: `/images/crew-album/${name}`, caption });
         }
         try { await Photo.insertMany(docs); } catch (e) { await Photo.deleteMany({ src: { $in: docs.map(d => d.src) }, crew: req.params.crewId }); throw e; }
         res.json({ success: true });
-    } catch (e) { await Promise.all(written.map(file => fs.unlink(file).catch(() => {}))); next(e); }
+    } catch (e) {
+        await Promise.all(written.map(async file => {
+            await fs.unlink(file).catch(() => {});
+            await imageStore.deleteImage(`/images/crew-album/${path.basename(file)}`).catch(() => {});
+        }));
+        next(e);
+    }
 });
 router.post('/photos/:itemId/delete', validItem, async (req, res, next) => {
     try {
@@ -72,6 +80,7 @@ router.post('/photos/:itemId/delete', validItem, async (req, res, next) => {
         const photo = await Photo.findOneAndDelete(query);
         if (!photo) return res.status(404).json({ message: '사진이 없거나 삭제 권한이 없습니다.' });
         if (/^\/images\/crew-album\/[a-f0-9-]+\.(jpg|png|webp)$/.test(photo.src)) await fs.unlink(path.join(directory, path.basename(photo.src))).catch(() => {});
+        await imageStore.deleteImage(photo.src);
         res.json({ success: true });
     } catch (e) { next(e); }
 });

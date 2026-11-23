@@ -62,6 +62,7 @@ app.use(express.json());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(require('./services/imageStore').serveImage);
 
 app.use('/config', express.static(path.join(__dirname, 'config')));
 app.get('/kakao-map-js-key', (req, res) => {

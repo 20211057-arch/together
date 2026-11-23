@@ -68,9 +68,7 @@ async function connectSocket(roomId) {
   });
   chatSocket.on('room unavailable', removeChatRoom);
   chatSocket.on('disconnect', (reason) => console.log('소켓 연결 끊김', reason));
-  chatSocket.on('join', (data) => inOutMessage(data.chat));
   chatSocket.on('chat message', (data) => renderChatMessage(data));
-  chatSocket.on('exit', (data) => inOutMessage(data.chat));
 }
 
 // 채팅방 클릭 시 데이터 불러오기
@@ -229,14 +227,6 @@ async function toggleMute() {
   } catch (error) {
     console.error('뮤트 처리 실패', error);
   }
-}
-
-// 입장/퇴장 메시지 렌더링
-function inOutMessage(message) {
-  const div = document.createElement('div');
-  div.textContent = message;
-  chatMessages.appendChild(div);
-  scrollToBottom();
 }
 
 // 마지막 메시지 시간 계산

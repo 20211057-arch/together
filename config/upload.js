@@ -2,6 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { randomUUID } = require('crypto');
+const { durableStorage } = require('../services/imageStore');
 
 const imageExtensions = {
     'image/jpeg': 'jpg',
@@ -64,7 +65,7 @@ const imageFilter = (req, file, cb) =>{
 
 // 프로필 사진 미들웨어
 const uploadProfile = multer({
-    storage : profileStorage,
+    storage : durableStorage(profileStorage),
     // 저장 경로(public > images > profile > 업로드한 시간(밀리초)_원본파일.확장자) 
     limits : {fileSize : 5 * 1024 * 1024},
     // 파일 용량(5MB로 제한)
@@ -74,26 +75,26 @@ const uploadProfile = multer({
 
 // 게시판 사진 미들웨어
 const uploadBoard = multer({
-    storage : boardStorage,
+    storage : durableStorage(boardStorage),
     limits : {fileSize : 20 * 1024 * 1024},
     fileFilter : imageFilter
 });
 
 // 정기모임 사진
 const uploadRegularProfile = multer({
-    storage : regularProfileStorage,
+    storage : durableStorage(regularProfileStorage),
     limits : {fileSize : 20 * 1024 * 1024},
     fileFilter : imageFilter
 });
 
 const uploadCrewIntro = multer({
-    storage: multer.diskStorage({
+    storage: durableStorage(multer.diskStorage({
         destination(req, file, cb) {
             const directory = path.join(__dirname, '../public/images/reg-crew/intro');
             fs.mkdir(directory, { recursive: true }, error => cb(error, directory));
         },
         filename: makeImageFileName
-    }),
+    })),
     limits: { fileSize: 5 * 1024 * 1024, files: 1 },
     fileFilter: imageFilter
 });
